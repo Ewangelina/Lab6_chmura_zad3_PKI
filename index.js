@@ -37,7 +37,10 @@ app.get('/', (req, res) => {
                 console.log(loggedUser);
             }
 
-            res.send('Logged in: '.concat(loggedUser, ' <img src = "', result.data.picture, '" height="23" width="23">'));
+            res.send('Logged in: '.concat(loggedUser, ' <img src = "', result.data.picture, '" height="23" width="23"> <br> <a href="#" onclick="signOut();">Sign out</a>'+
+            '<script> function signOut() { var auth2 = gapi.auth2.getAuthInstance(); auth2.signOut().then(function () {'+
+                  'console.log("User signed out."); window.location.replace("https://lab6-zad3.onrender.com/");'+
+                '});}</script>'));
         })
     }
 })
