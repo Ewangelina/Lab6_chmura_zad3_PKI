@@ -12,6 +12,17 @@ const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_U
 var authed = false;
 
 app.get('/', (req, res) => {
+    res.write(`<a href="https://lab6-zad3.onrender.com/google">Sign in with Google</a>`);
+    res.write(`<br>`);
+});
+
+app.get('/google/out', (req, res) => {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+    console.log('User signed out.');
+});
+
+app.get('/google', (req, res) => {
     if (!authed) 
     {
         // Generate an OAuth URL and redirect there
@@ -43,7 +54,7 @@ app.get('/', (req, res) => {
                 '});}</script>'));
         })
     }
-})
+});
 
 app.get('/auth/google/callback', function (req, res) {
     const code = req.query.code
