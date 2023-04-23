@@ -12,9 +12,9 @@ const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_U
 var authed = false;
 
 app.get('/', (req, res) => {
-    res.write(`<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`);
+    res.write(`<a href="https://lab6-zad3.onrender.com/google">Sign in with Google</a>`);
     res.write(`<br>`);
-    res.write(`<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" class="btn btn-danger"><span class="fa fa-github"></span> Sign in with Github</a>`);
+
 });
 
 app.get('/googleout', (req, res) => {
@@ -76,56 +76,6 @@ app.get('/auth/google/callback', function (req, res) {
         });
     }
 });
-
-app.get('/auth/github/callback', function (req, res) {
-    // The req.query object has the query params that were sent to this route.
-    const requestToken = req.query.code
-    
-    axios({
-        method: 'post',
-        client_id: "189a8fb8aff66b200a36",
-        client_secret: "84ea18cd3fe49b8ea62f7417747c5a189359454a",
-        code: req.query.code,
-        url: `https://github.com/login/oauth/access_token`,
-        // Set the content type header, so that we get the response in JSON
-        headers: {
-            accept: 'application/json'
-        }
-    }).then((response) => {
-        access_token = response.data.access_token
-        res.redirect('/success');
-    })
-});
-
-app.get('/success', function(req, res) {
-
-    axios({
-      method: 'get',
-      url: `https://api.github.com/user`,
-      headers: {
-        Authorization: 'token ' + access_token
-      }
-    }).then((response) => {
-        res.write(`<div class="container">`);
-        res.write(`  <div class="jumbotron">`);
-        res.write(`      <h1 class="text-primary  text-center"><span class="fa fa-github"></span> Github Information</h1>`);
-        res.write(`      <div class="row">`);
-        res.write(`        <div class="col-sm-6">`);
-        res.write(`          <div class="well">`);
-        res.write(`            <p>`);
-        res.write(`              <strong>Name</strong>: <%= userData.name %><br>`);
-        res.write(`              <strong>Username</strong>: <%= userData.login %><br>`);
-        res.write(`                <strong>Company</strong>: <%= userData.company %><br>`);
-        res.write(`                <strong>Bio</strong>: <%= userData.bio %>`);
-        res.write(`            </p>`);
-        res.write(`          </div>`);
-        res.write(`        </div>`);
-        res.write(`    </div>`);
-        res.write(`  </div>`);
-        res.write(`</div>`);
-        
-    })
-  });
 
 const port = process.env.port || 5000
 app.listen(port, () => console.log(`Server running at ${port}`));
