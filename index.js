@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { default: axios } = require("axios");
+const { axios } = require("axios");
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 
