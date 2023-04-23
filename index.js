@@ -51,11 +51,11 @@ app.get('/auth/github/callback', (req, res) => {
 
 app.get('/', (req, res) => {
     var ret = "";
-    ret += `<a href="http://localhost:5000/google" target="_blank">Sign in with Google</a>`; //https://lab6-zad3.onrender.com/google
+    ret += `<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`; //https://lab6-zad3.onrender.com/google
     ret += `<br>`;
     ret += `<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" target="_blank">Sign in with Github</a>`;
     ret += `<br>`;
-    ret += `<a href="http://localhost:5000/googleout" target="_blank">Sign OUT from Google</a>`;
+    ret += `<a href="https://lab6-zad3.onrender.com/googleout" target="_blank">Sign OUT from Google</a>`;
     res.send(ret)
 });
 
@@ -94,7 +94,7 @@ app.get('/google', (req, res) => {
             {
                 loggedUser = result.data.name;
                 var ret = "Hello " + loggedUser;
-                ret += `<a href="http://localhost:5000/googleout" target="_blank">Sign in with Google</a>`;
+                ret += `<a href="https://lab6-zad3.onrender.com/googleout" target="_blank">Sign in with Google</a>`;
             }
         });
     }
