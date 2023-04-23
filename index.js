@@ -37,20 +37,15 @@ app.get('/auth/github/callback', (req, res) => {
   })
   
   app.get('/success', function(req, res) {
-  
-    axios({
-      method: 'get',
-      url: `https://api.github.com/user`,
-      headers: {
-        Authorization: 'token ' + access_token
-      }
-    }).then((response) => {
-      res.render('pages/success',{ userData: response.data });
-    })
+    res.send(`Signed in with Github`);
   });
 
 app.get('/', (req, res) => {
     var ret = "";
+    if (authed)
+    {
+      ret += `Logged in with google<br>`;
+    }
     ret += `<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`; //https://lab6-zad3.onrender.com/google
     ret += `<br>`;
     ret += `<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" target="_blank">Sign in with Github</a>`;
