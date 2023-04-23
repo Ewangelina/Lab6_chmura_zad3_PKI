@@ -21,7 +21,6 @@ app.get('/googleout', (req, res) => {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
     console.log('User signed out.');
-    res.write(`User signed out<br><a href="https://lab6-zad3.onrender.com">Homepage</a>`);
     });
 });
 
