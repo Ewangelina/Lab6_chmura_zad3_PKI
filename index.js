@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+const { default: axios } = require("axios");
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 
@@ -11,16 +12,19 @@ const REDIRECT_URL = OAuth2Data.web.redirect_uris[0];
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 var authed = false;
 
+var access_token;
+
 app.get('/', (req, res) => {
-    res.write(`<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`);
+    res.write(`<a href="https://lab6-zad3.onrender.com/google" target="_blank" rel="noopener noreferrer">Sign in with Google</a>`);
     res.write(`<br>`);
-    res.write(`<a href="https://github.com/login/oauth/authorize?client_id=<%= client_id %>" class="btn btn-danger"><span class="fa fa-github"></span> Sign in with Github</a>`);
+    res.write(`<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" class="btn btn-danger"><span class="fa fa-github"></span> Sign in with Github</a>`);
 });
 
-app.get('/google/out', (req, res) => {
+app.get('/googleout', (req, res) => {
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
     console.log('User signed out.');
+    res.write(`User signed out<br><a href="https://lab6-zad3.onrender.com">Homepage</a>`);
     });
 });
 
@@ -52,7 +56,7 @@ app.get('/google', (req, res) => {
 
             res.send('Logged in: '.concat(loggedUser, ' <img src = "', result.data.picture, '" height="23" width="23"> <br> <a href="#" onclick="signOut();">Sign out</a>'+
             '<script> function signOut() { var auth2 = gapi.auth2.getAuthInstance(); auth2.signOut().then(function () {'+
-                  'console.log("User signed out."); window.location.replace("https://lab6-zad3.onrender.com/");'+
+                  'console.log("User signed out."); window.location.replace("https://lab6-zad3.onrender.com/googleout");'+
                 '});}</script>'));
         })
     }
@@ -76,20 +80,23 @@ app.get('/auth/google/callback', function (req, res) {
     }
 });
 
+
+
 app.get('/auth/github/callback', function (req, res) {
-    // The req.query object has the query params that were sent to this route.
-    const requestToken = req.query.code
-    
-    axios({
-        method: 'post',
-        url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
-        // Set the content type header, so that we get the response in JSON
+    axios.post("https://github.com/login/oauth/access_token", {
+        client_id: "189a8fb8aff66b200a36",
+        client_secret: "84ea18cd3fe49b8ea62f7417747c5a189359454a",
+        code: req.query.code
+    }, {
         headers: {
-            accept: 'application/json'
+            Accept: "application/json"
         }
-    }).then((response) => {
-        access_token = response.data.access_token
-        res.redirect('/success');
+    }).then((result) => {
+        access_token = result.data.access_token;
+        console.log(result.data.access_token)
+        res.redirect("https://lab6-zad3.onrender.com/success")
+    }).catch((err) => {
+        console.log(err);
     })
 });
 
