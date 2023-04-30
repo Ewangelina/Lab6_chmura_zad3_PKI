@@ -2,6 +2,8 @@ const { google } = require('googleapis');
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 const axios = require('axios')
+const postgres = require('postgres');
+require('dotenv').config();
 
 const app = express()
 //https://lab6-zad3.onrender.com/auth/google/callback
@@ -14,6 +16,11 @@ var authed = false;
 
 const clientID = "189a8fb8aff66b200a36";
 const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
+
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
+
+const sql = postgres(URL, { ssl: 'require' });
 
 app.set('view engine', 'ejs');
 var access_token = "";
@@ -113,13 +120,7 @@ app.get('/auth/google/callback', function (req, res) {
     }
 });
 
-const postgres = require('postgres');
-require('dotenv').config();
 
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
-
-const sql = postgres(URL, { ssl: 'require' });
 
 async function getPgVersion() {
   const result = await sql`select version()`;
@@ -127,6 +128,27 @@ async function getPgVersion() {
 }
 
 getPgVersion();
+
+const connectDb = async () => {
+     try {
+       const client = new Client({
+       user: process.env.PGUSER,
+       host: process.env.PGHOST,
+       database: process.env.PGDATABASE,
+       password: process.env.PGPASSWORD,
+       port: process.env.PGPORT
+      })
+
+      await client.connect()
+      const res = await client.query('SELECT * FROM users')
+      console.log(res)
+      await client.end()
+     } catch (error) {
+      console.log(error)
+     }
+    }
+    
+    connectDb()
 
 const port = process.env.port || 5000
 app.listen(port, () => console.log(`Server running at ${port}`));
