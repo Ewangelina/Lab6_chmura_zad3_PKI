@@ -1,0 +1,5 @@
+CREATE TABLE users(id SERIAL PRIMARY KEY, name TEXT NOT NULL, joined integer, lastvisit integer, counter integer default 0);
+INSERT INTO users(name, joined, lastvisit, counter) values ('przyklad', 0, 0, 0)
+
+
+
