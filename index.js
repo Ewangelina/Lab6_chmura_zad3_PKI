@@ -119,6 +119,19 @@ app.get('/auth/google/callback', function (req, res) {
     }
 });
 
+app.get('/db', function (req, res) {
+    console.log("Pobieranie danych");
+    client.query('SELECT * FROM users', (error, res) => {
+        if (reeor) {
+            throw(error);
+        }
+        console.log("Odebrane dane");
+        for (let row of res.rows){
+            console.log(JSON.stringify(row));
+        }
+    })
+});
+
 const connectDb = async () => {
      try {
        const client = new Client({
