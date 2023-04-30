@@ -2,7 +2,7 @@ const { google } = require('googleapis');
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 const axios = require('axios')
-const { Client } = require("pg")
+const { client } = require("pg")
 const dotenv = require("dotenv")
 dotenv.config()
 
