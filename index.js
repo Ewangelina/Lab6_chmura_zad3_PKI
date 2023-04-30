@@ -2,8 +2,9 @@ const { google } = require('googleapis');
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 const axios = require('axios')
-const postgres = require('postgres');
-require('dotenv').config();
+const { Client } = require("pg")
+const dotenv = require("dotenv")
+dotenv.config()
 
 const app = express()
 //https://lab6-zad3.onrender.com/auth/google/callback
@@ -19,8 +20,6 @@ const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
 const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
-
-const sql = postgres(URL, { ssl: 'require' });
 
 app.set('view engine', 'ejs');
 var access_token = "";
@@ -119,15 +118,6 @@ app.get('/auth/google/callback', function (req, res) {
         });
     }
 });
-
-
-
-async function getPgVersion() {
-  const result = await sql`select version()`;
-  console.log(result);
-}
-
-getPgVersion();
 
 const connectDb = async () => {
      try {
