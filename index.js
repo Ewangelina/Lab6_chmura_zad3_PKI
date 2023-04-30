@@ -121,15 +121,20 @@ app.get('/auth/google/callback', function (req, res) {
 
 app.get('/db', function (req, res) {
     console.log("Pobieranie danych");
+    let ret = "from database\n";
     client.query('SELECT * FROM users', (error, res) => {
         if (reeor) {
+            ret += "ERROR";
             throw(error);
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
+            ret += JSON.stringify(row) + "\n";
             console.log(JSON.stringify(row));
         }
     })
+
+    res.send(ret);
 });
 
 const connectDb = async () => {
