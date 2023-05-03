@@ -32,7 +32,7 @@ app.get('/auth/github/callback', (req, res) => {
     
     axios({
       method: 'post',
-      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
+      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}&sslmode=require`,
       // Set the content type header, so that we get the response in JSON
       headers: {
            accept: 'application/json'
@@ -58,6 +58,8 @@ app.get('/', (req, res) => {
     ret += `<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" target="_blank">Sign in with Github</a>`;
     ret += `<br>`;
     ret += `<a href="https://lab6-zad3.onrender.com/googleout" target="_blank">Sign OUT from Google</a>`;
+    ret += `<br>`;
+    ret += `<a href="https://lab6-zad3.onrender.com/db" target="_blank">DATABASE</a>`;
     res.send(ret)
 });
 
