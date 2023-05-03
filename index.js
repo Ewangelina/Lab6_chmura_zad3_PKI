@@ -2,7 +2,7 @@ const { google } = require('googleapis');
 const express = require('express')
 const OAuth2Data = require('./google_key.json')
 const axios = require('axios')
-const { client } = require("pg")
+const { Client } = require("pg")
 const dotenv = require("dotenv")
 dotenv.config()
 
@@ -17,6 +17,7 @@ var authed = false;
 
 const clientID = "189a8fb8aff66b200a36";
 const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
+let client;
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
 const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
@@ -139,7 +140,7 @@ app.get('/db', function (req, res) {
 
 const connectDb = async () => {
      try {
-       const client = new Client({
+       client = new Client({
        user: process.env.PGUSER,
        host: process.env.PGHOST,
        database: process.env.PGDATABASE,
