@@ -50,7 +50,7 @@ app.get('/auth/github/callback', (req, res) => {
   });
 
 app.get('/', (req, res) => {
-    var ret = "";
+    let ret = "";
     if (authed)
     {
       ret += `Logged in with google<br>`;
@@ -126,17 +126,20 @@ app.get('/auth/google/callback', function (req, res) {
 
 app.get('/db', function (req, res) {
     console.log("Pobieranie danych");
-    let ret = "from database\n";
-    client.query('SELECT * FROM users', (error, res) => {
+    let ret = "from database<br>";
+    ret += client.query('SELECT * FROM users', (error, res) => {
         if (error) {
-            ret += "ERROR";
-            throw(error);
+            console.log(error);
+            return error.message();
         }
         console.log("Odebrane dane");
+        let ret = "";
         for (let row of res.rows){
-            ret += JSON.stringify(row) + "\n";
+            ret += JSON.stringify(row) + "<br>";
             console.log(JSON.stringify(row));
         }
+        console.log(ret);
+        return ret;
     })
 
     res.send(ret);
@@ -156,7 +159,7 @@ const connectDb = async () => {
       await client.connect()
       const res = await client.query('SELECT * FROM users')
       console.log(res)
-      await client.end()
+      
      } catch (error) {
       console.log(error)
      }
