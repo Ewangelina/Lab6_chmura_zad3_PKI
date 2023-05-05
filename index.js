@@ -126,19 +126,16 @@ app.get('/auth/google/callback', function (req, res) {
 
 app.get('/db', function (req, res) {
     console.log("Pobieranie danych");
-    let ret = "from database<br>";
-    ret += client.query('SELECT * FROM users', (error, res) => {
+    let ret = "Check logs";
+    client.query('SELECT * FROM users', (error, res) => {
         if (error) {
             console.log(error);
             return error.message();
         }
         console.log("Odebrane dane");
-        let ret = "";
         for (let row of res.rows){
-            ret += JSON.stringify(row) + "<br>";
             console.log(JSON.stringify(row));
         }
-        console.log(ret);
         return ret;
     })
 
