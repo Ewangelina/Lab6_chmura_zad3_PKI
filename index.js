@@ -127,7 +127,7 @@ app.get('/db', function (req, res) {
     console.log("Pobieranie danych");
     let ret = "from database\n";
     client.query('SELECT * FROM users', (error, res) => {
-        if (reeor) {
+        if (error) {
             ret += "ERROR";
             throw(error);
         }
