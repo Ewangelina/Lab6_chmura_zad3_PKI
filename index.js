@@ -5,6 +5,8 @@ const axios = require('axios')
 const { Client } = require("pg")
 const dotenv = require("dotenv")
 dotenv.config()
+const postgres = require('postgres')
+
 
 const app = express()
 //https://lab6-zad3.onrender.com/auth/google/callback
@@ -20,8 +22,7 @@ const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
 let client;
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}&sslmode=require`;
-
+const sql = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require?options=project%3D${ENDPOINT_ID}`;
 app.set('view engine', 'ejs');
 var access_token = "";
 
