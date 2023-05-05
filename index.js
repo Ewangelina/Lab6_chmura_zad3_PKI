@@ -125,12 +125,13 @@ app.get('/auth/google/callback', function (req, res) {
 });
 
 app.get('/db', function (req, res) {
+    connectDb();
     console.log("Pobieranie danych");
     let ret = "Check logs";
     client.query('SELECT * FROM users', (error, res) => {
         if (error) {
             console.log(error);
-            return error.message();
+            return error.message;
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
@@ -139,6 +140,7 @@ app.get('/db', function (req, res) {
         return ret;
     })
 
+    disconnectDB();
     res.send(ret);
 });
 
@@ -154,15 +156,23 @@ const connectDb = async () => {
       })
 
       await client.connect()
-      const res = await client.query('SELECT * FROM users')
-      console.log(res)
+      //const res = await client.query('SELECT * FROM users')
+      //console.log(res)
+      console.log("Opened database connection");
       
      } catch (error) {
       console.log(error)
      }
     }
+
+const disconnectDB = async () => {
+    setTimeout(function(){
+        client.end();
+        console.log("Closed database connection");
+    }, 2000);
+}
     
-    connectDb()
+
 
 const port = process.env.port || 5000
 app.listen(port, () => console.log(`Server running at ${port}`));
