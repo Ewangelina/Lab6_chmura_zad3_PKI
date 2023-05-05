@@ -22,7 +22,8 @@ const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
 let client;
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const sql = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require?options=project%3D${ENDPOINT_ID}`;
+const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require?options=project%3D${ENDPOINT_ID}`;
+const sql = postgres(URL, { ssl: 'require' });
 app.set('view engine', 'ejs');
 var access_token = "";
 
@@ -148,7 +149,8 @@ const connectDb = async () => {
        host: process.env.PGHOST,
        database: process.env.PGDATABASE,
        password: process.env.PGPASSWORD,
-       port: process.env.PGPORT
+       port: process.env.PGPORT,
+       ssl: require
       })
 
       await client.connect()
