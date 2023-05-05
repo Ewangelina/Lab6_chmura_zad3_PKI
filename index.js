@@ -20,7 +20,7 @@ const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
 let client;
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
+const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}&sslmode=require`;
 
 app.set('view engine', 'ejs');
 var access_token = "";
@@ -32,7 +32,7 @@ app.get('/auth/github/callback', (req, res) => {
     
     axios({
       method: 'post',
-      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}&sslmode=require`,
+      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
       // Set the content type header, so that we get the response in JSON
       headers: {
            accept: 'application/json'
