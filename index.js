@@ -68,7 +68,7 @@ app.get('/auth/github/callback', (req, res) => {
     ret += `    </div>`;
     ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
 
-    ret.send(ret);
+    res.send(ret);
   });
 
 app.get('/', (req, res) => {
@@ -179,7 +179,7 @@ app.get('/google', (req, res) => {
         ret += `    </div>`;
         ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
 
-        ret.send(ret);       
+        res.send(ret);       
     }
 })
 
