@@ -195,7 +195,8 @@ app.get('/db', function (req, res) {
     client.query('SELECT * FROM users', (error, res) => {
         if (error) {
             console.log(error);
-            return error.message;
+            ret = "ERROR in connecting to database";
+            return;
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
