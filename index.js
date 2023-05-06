@@ -208,7 +208,7 @@ app.get('/db', function (req, res) {
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
-            let json_row = JSON.parse(JSON.stringify(row));
+            let json_row = JSON.stringify(row);
             ret += `        <tr>`;
             ret += `            <td>` + json_row.id.toString() + `</td>`;
             ret += `            <td>` + json_row.name.toString() + `</td>`;
