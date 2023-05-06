@@ -44,6 +44,7 @@ app.get('/auth/github/callback', (req, res) => {
     }).then((response) => {
       access_token = response.data.access_token;
       username = response.data.toString();
+      console.log(response.data);
       res.redirect('/success');
     })
   })
