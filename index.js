@@ -48,26 +48,8 @@ app.get('/auth/github/callback', (req, res) => {
   })
   
   app.get('/success', function(req, res) {
-    username = req.data.name;
-    let ret = "";
-    ret += `<!DOCTYPE html>`;
-    ret += `<html lang="en">`;
-    ret += `<head>`;
-    ret += `    <meta charset="utf-8">`;
-    ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
-    ret += `    <title>` + username + `</title>`;
-    ret += `    <!-- Bootstrap CSS -->`;
-    ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
-    ret += `</head>`;
-    ret += `<body>`;
-    ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
-    ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
-    ret += `    <div class="container">`;
-    ret += `        <h1>Logged in through Github</h1>`;
-    ret += `        <p>` + username + `</p>`;
-    ret += `    </div>`;
-    ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
-    res.send(ret)
+    
+    res.redirect("https://lab6-zad3.onrender.com/google");
   });
 
 app.get('/', (req, res) => {
@@ -156,20 +138,33 @@ app.get('/google', (req, res) => {
                 username = result.data.name;
             }
         });
+
+        let ret = "";
+        ret += `<!DOCTYPE html>`;
+        ret += `<html lang="en">`;
+        ret += `<head>`;
+        ret += `    <meta charset="utf-8">`;
+        ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
+        ret += `    <title>` + username + `</title>`;
+        ret += `    <!-- Bootstrap CSS -->`;
+        ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
+        ret += `</head>`;
+        ret += `<body>`;
+        ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
+        ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
+        ret += `    <div class="container">`;
+        ret += `        <h1>Logged in through Github</h1>`;
+        ret += `        <p>` + username + `</p>`;
+        ret += `    </div>`;
+        ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
+
+        ret.send(ret);
     }
 })
 
 app.get('/auth/google/callback', function (req, res) {
     const code = req.query.code
     if (code) {
-        oauth2.userinfo.v2.me.get(function(err, result) {
-            if (err) return console.log('Returned an error: ' + err);
-            else
-            {
-                username = result.data.name;
-            }
-        });
-
         // Get an access token based on our OAuth code
         oAuth2Client.getToken(code, function (err, tokens) {
             if (err) {
@@ -182,6 +177,21 @@ app.get('/auth/google/callback', function (req, res) {
                 res.redirect('/')
             }
         });
+
+        try
+        {
+            oauth2.userinfo.v2.me.get(function(err, result) {
+                if (err) return console.log('Returned an error: ' + err);
+                else
+                {
+                    username = result.data.name;
+                }
+            });
+        }
+        catch
+        {
+
+        }
     }
 });
 
@@ -208,6 +218,7 @@ app.get('/db', function (req, res) {
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
+            ret = "Always " + ret;
             let json_row = JSON.stringify(row);
             ret += `        <tr>`;
             ret += `            <td>` + json_row.id.toString() + `</td>`;
