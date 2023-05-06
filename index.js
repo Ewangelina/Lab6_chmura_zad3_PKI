@@ -48,8 +48,7 @@ app.get('/auth/github/callback', (req, res) => {
   })
   
   app.get('/success', function(req, res) {
-    if (res.data.name) username = res.data.name;
-    else username = req.data.name;
+    username = req.data.name;
     let ret = "";
     ret += `<!DOCTYPE html>`;
     ret += `<html lang="en">`;
@@ -96,6 +95,15 @@ app.get('/', (req, res) => {
 
     if (authed)
     {
+        oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
+        oauth2.userinfo.v2.me.get(function(err, result) {
+            if (err) return console.log('Returned an error: ' + err);
+            else
+            {
+                username = result.data.name;
+            }
+        });
+
         ret += `    <div class="container">`;
         ret += `        <h1>Logged in through Google</h1>`;
         ret += `        <p>` + username + `</p>`;
@@ -138,7 +146,7 @@ app.get('/google', (req, res) => {
             scope: 'https://www.googleapis.com/auth/userinfo.profile'
         });
         //console.log(url)
-        res.redirect("https://lab6-zad3.onrender.com/google");
+        res.redirect(url);
     } else {
         oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
         oauth2.userinfo.v2.me.get(function(err, result) {
