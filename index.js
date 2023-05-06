@@ -48,7 +48,25 @@ app.get('/auth/github/callback', (req, res) => {
   
   app.get('/success', function(req, res) {
     username = userData.name;
-    res.send(`<title>` + username + `</title> Signed in with Github`);
+    let ret = "";
+    ret += `<!DOCTYPE html>`;
+    ret += `<html lang="en">`;
+    ret += `<head>`;
+    ret += `    <meta charset="utf-8">`;
+    ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
+    ret += `    <title>` + username + `</title>`;
+    ret += `    <!-- Bootstrap CSS -->`;
+    ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
+    ret += `</head>`;
+    ret += `<body>`;
+    ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
+    ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
+    ret += `    <div class="container">`;
+    ret += `        <h1>Logged in through Github:</h1>`;
+    ret += `        <p>` + username + `</p>`;
+    ret += `    </div>`;
+    ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
+    res.send(ret)
   });
 
 app.get('/', (req, res) => {
@@ -103,7 +121,8 @@ app.get('/googleout', (req, res) => {
   }
   catch (err)
   {
-      res.send("Logged out");
+    username = "";
+    res.send("Logged out");
   }    
   
   
