@@ -43,7 +43,7 @@ app.get('/auth/github/callback', (req, res) => {
       }
     }).then((response) => {
       access_token = response.data.access_token;
-      username = response.data.username;
+      username = response.data.name;
       res.redirect('/success');
     })
   })
