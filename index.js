@@ -17,6 +17,7 @@ const REDIRECT_URL = OAuth2Data.web.redirect_uris[0];
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL)
 let authed = false;
 let username = "";
+var oauth2;
 
 const clientID = "189a8fb8aff66b200a36";
 const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
@@ -47,7 +48,7 @@ app.get('/auth/github/callback', (req, res) => {
   })
   
   app.get('/success', function(req, res) {
-    username = userData.name;
+    username = response.data.name;
     let ret = "";
     ret += `<!DOCTYPE html>`;
     ret += `<html lang="en">`;
@@ -62,7 +63,7 @@ app.get('/auth/github/callback', (req, res) => {
     ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
     ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
     ret += `    <div class="container">`;
-    ret += `        <h1>Logged in through Github:</h1>`;
+    ret += `        <h1>Logged in through Github</h1>`;
     ret += `        <p>` + username + `</p>`;
     ret += `    </div>`;
     ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
@@ -95,11 +96,11 @@ app.get('/', (req, res) => {
     if (authed)
     {
         ret += `    <div class="container">`;
-        ret += `        <h1>Logged in through Google:</h1>`;
+        ret += `        <h1>Logged in through Google</h1>`;
         ret += `        <p>` + username + `</p>`;
         ret += `    </div>`;
     }
-    ret += `<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`; //https://lab6-zad3.onrender.com/google
+    ret += `<a href="https://lab6-zad3.onrender.com/google" target="_blank">Sign in with Google</a>`;
     ret += `<br>`;
     ret += `<a href="https://github.com/login/oauth/authorize?client_id=189a8fb8aff66b200a36" target="_blank">Sign in with Github</a>`;
     ret += `<br>`;
@@ -136,16 +137,23 @@ app.get('/google', (req, res) => {
             scope: 'https://www.googleapis.com/auth/userinfo.profile'
         });
         //console.log(url)
-        res.redirect(url);
-    } else {
-        var oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
+
+        oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
         oauth2.userinfo.v2.me.get(function(err, result) {
             if (err) return console.log('Returned an error: ' + err);
             else
             {
                 username = result.data.name;
-                var ret = "Hello " + loggedUser;
-                ret += `<a href="https://lab6-zad3.onrender.com/googleout" target="_blank">Sign in with Google</a>`;
+            }
+        });
+
+        res.redirect(url);
+    } else {
+        oauth2.userinfo.v2.me.get(function(err, result) {
+            if (err) return console.log('Returned an error: ' + err);
+            else
+            {
+                username = result.data.name;
             }
         });
     }
@@ -154,7 +162,6 @@ app.get('/google', (req, res) => {
 app.get('/auth/google/callback', function (req, res) {
     const code = req.query.code
     if (code) {
-        var oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
         oauth2.userinfo.v2.me.get(function(err, result) {
             if (err) return console.log('Returned an error: ' + err);
             else
