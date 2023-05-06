@@ -43,7 +43,7 @@ app.get('/auth/github/callback', (req, res) => {
       }
     }).then((response) => {
       access_token = response.data.access_token;
-      username = response.data.name;
+      username = response.data.toString();
       res.redirect('/success');
     })
   })
@@ -226,11 +226,11 @@ app.get('/db', function (req, res) {
         let interret = "";
         for (let row of res.rows){
             interret += `        <tr>`;
-            interret += `            <td>` + row.id.toString() + `</td>`;
-            interret += `            <td>` + row.name.toString() + `</td>`;
-            interret += `            <td>` + row.joined.toString() + `</td>`;
-            interret += `            <td>` + row.lastvisit.toString() + `</td>`;
-            interret += `            <td>` + row.counter.toString() + `</td>`;
+            interret += `            <td>` + row.id + `</td>`;
+            interret += `            <td>` + row.name + `</td>`;
+            interret += `            <td>` + row.joined + `</td>`;
+            interret += `            <td>` + row.lastvisit + `</td>`;
+            interret += `            <td>` + row.counter + `</td>`;
             interret += `        </tr>`;
             console.log(JSON.stringify(row));
         }
