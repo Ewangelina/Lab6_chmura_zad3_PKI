@@ -216,26 +216,27 @@ app.get('/db', function (req, res) {
     ret += `        </tr>`;
     ret += `    </thead>`;
     ret += `    <tbody>`;
-    client.query('SELECT * FROM users', (error, res) => {
+    let insideTable = client.query('SELECT * FROM users', (error, res) => {
         if (error) {
             console.log(error);
             ret = "ERROR in connecting to database";
             return;
         }
         console.log("Odebrane dane");
+        let interret = "";
         for (let row of res.rows){
-            ret = "Always " + ret;
-            let json_row = JSON.stringify(row);
-            ret += `        <tr>`;
-            ret += `            <td>` + json_row.id.toString() + `</td>`;
-            ret += `            <td>` + json_row.name.toString() + `</td>`;
-            ret += `            <td>` + json_row.joined.toString() + `</td>`;
-            ret += `            <td>` + json_row.lastvisit.toString() + `</td>`;
-            ret += `            <td>` + json_row.counter.toString() + `</td>`;
-            ret += `        </tr>`;
+            interret += `        <tr>`;
+            interret += `            <td>` + row.id.toString() + `</td>`;
+            interret += `            <td>` + row.name.toString() + `</td>`;
+            interret += `            <td>` + row.joined.toString() + `</td>`;
+            interret += `            <td>` + row.lastvisit.toString() + `</td>`;
+            interret += `            <td>` + row.counter.toString() + `</td>`;
+            interret += `        </tr>`;
             console.log(JSON.stringify(row));
         }
+        return interret;
     })
+    if (insideTable != undefined) ret += insideTable;
     ret += `    </tbody>`;
     ret += `</table>`;
 
