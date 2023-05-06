@@ -181,6 +181,17 @@ app.get('/db', function (req, res) {
     connectDb();
     console.log("Pobieranie danych");
     let ret = "Check logs";
+    ret += `<table class="table">`;
+    ret += `    <thead>`;
+    ret += `        <tr>`;
+    ret += `            <th>ID</th>`;
+    ret += `            <th>Name</th>`;
+    ret += `            <th>Joined</th>`;
+    ret += `            <th>Last visit</th>`;
+    ret += `            <th>Counter</th>`;
+    ret += `        </tr>`;
+    ret += `    </thead>`;
+    ret += `    <tbody>`;
     client.query('SELECT * FROM users', (error, res) => {
         if (error) {
             console.log(error);
@@ -188,10 +199,19 @@ app.get('/db', function (req, res) {
         }
         console.log("Odebrane dane");
         for (let row of res.rows){
+            let json_row = JSON.parse(JSON.stringify(row));
+            ret += `        <tr>`;
+            ret += `            <td>` + json_row.id.toString() + `</td>`;
+            ret += `            <td>` + json_row.name.toString() + `</td>`;
+            ret += `            <td>` + json_row.joined.toString() + `</td>`;
+            ret += `            <td>` + json_row.lastvisit.toString() + `</td>`;
+            ret += `            <td>` + json_row.counter.toString() + `</td>`;
+            ret += `        </tr>`;
             console.log(JSON.stringify(row));
         }
-        return ret;
     })
+    ret += `    </tbody>`;
+    ret += `</table>`;
 
     disconnectDB();
     res.send(ret);
@@ -222,7 +242,7 @@ const disconnectDB = async () => {
     setTimeout(function(){
         client.end();
         console.log("Closed database connection");
-    }, 2000);
+    }, 5000);
 }
     
 
