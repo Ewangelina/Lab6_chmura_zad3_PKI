@@ -50,25 +50,25 @@ app.get('/auth/github/callback', (req, res) => {
   
   app.get('/success', function(req, res) { //Github success
     let ret = "";
-        ret += `<!DOCTYPE html>`;
-        ret += `<html lang="en">`;
-        ret += `<head>`;
-        ret += `    <meta charset="utf-8">`;
-        ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
-        ret += `    <title>` + username + `</title>`;
-        ret += `    <!-- Bootstrap CSS -->`;
-        ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
-        ret += `</head>`;
-        ret += `<body>`;
-        ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
-        ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
-        ret += `    <div class="container">`;
-        ret += `        <h1>Logged in through Github</h1>`;
-        ret += `        <p>` + username + `</p>`;
-        ret += `    </div>`;
-        ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
+    ret += `<!DOCTYPE html>`;
+    ret += `<html lang="en">`;
+    ret += `<head>`;
+    ret += `    <meta charset="utf-8">`;
+    ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
+    ret += `    <title>` + username + `</title>`;
+    ret += `    <!-- Bootstrap CSS -->`;
+    ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
+    ret += `</head>`;
+    ret += `<body>`;
+    ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
+    ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
+    ret += `    <div class="container">`;
+    ret += `        <h1>Logged in through Github</h1>`;
+    ret += `        <p>` + username + `</p>`;
+    ret += `    </div>`;
+    ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
 
-        ret.send(ret);
+    ret.send(ret);
   });
 
 app.get('/', (req, res) => {
@@ -96,6 +96,7 @@ app.get('/', (req, res) => {
 
     if (authed)
     {
+        /*
         oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
         oauth2.userinfo.v2.me.get(function(err, result) {
             if (err) return console.log('Returned an error: ' + err);
@@ -104,9 +105,10 @@ app.get('/', (req, res) => {
                 username = result.data.name;
             }
         });
+        */
 
         ret += `    <div class="container">`;
-        ret += `        <h1>Logged in through Google</h1>`;
+        ret += `        <h1>Logged in</h1>`;
         ret += `        <p>` + username + `</p>`;
         ret += `    </div>`;
     }
@@ -122,17 +124,17 @@ app.get('/', (req, res) => {
 
 app.get('/googleout', (req, res) => {
   authed = false;
+  username = "";
   try
   {
       var auth2 = gapi.auth2.getAuthInstance();
       auth2.signOut().then(function () {
           console.log('User signed out.');
-          res.send(`User signed out<br><a href="https://lab6-zad3.onrender.com">Homepage</a>`);
+          res.send("Logged out");
       });
   }
   catch (err)
   {
-    username = "";
     res.send("Logged out");
   }    
   
