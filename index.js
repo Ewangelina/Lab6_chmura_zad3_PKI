@@ -47,7 +47,8 @@ app.get('/auth/github/callback', (req, res) => {
   })
   
   app.get('/success', function(req, res) {
-    res.send(`Signed in with Github`);
+    username = userData.name;
+    res.send(`<title>` + username + `</title> Signed in with Github`);
   });
 
 app.get('/', (req, res) => {
@@ -134,6 +135,7 @@ app.get('/google', (req, res) => {
 app.get('/auth/google/callback', function (req, res) {
     const code = req.query.code
     if (code) {
+        var oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
         oauth2.userinfo.v2.me.get(function(err, result) {
             if (err) return console.log('Returned an error: ' + err);
             else
