@@ -206,16 +206,38 @@ app.get('/db', function (req, res) {
     connectDb();
     console.log("Pobieranie danych");
     let ret = "Check logs";
-    let text = ""
-    let insideTable = client.query('SELECT * FROM users').then((result1) => {
-    text+=`
-    ID	NAME	JOINED	LASTVISIT	COUNTER	AUTHTYPE
-    Dane z bazy
-    `
-    for (let row of result1.rows) {
-    text+=''+row.id+''+row.name+''+row.joined+''+row.lastvisit+''+row.counter+''+row.authType+''
-    }
-    ret += text
+    ret += `<table class="table">`;
+    ret += `    <thead>`;
+    ret += `        <tr>`;
+    ret += `            <th>ID</th>`;
+    ret += `            <th>Name</th>`;
+    ret += `            <th>Joined</th>`;
+    ret += `            <th>Last visit</th>`;
+    ret += `            <th>Counter</th>`;
+    ret += `        </tr>`;
+    ret += `    </thead>`;
+    ret += `    <tbody>`;
+    let insideTable = client.query('SELECT * FROM users', (error, res) => {
+        if (error) {
+            console.log(error);
+            ret = "ERROR in connecting to database";
+            return;
+        }
+        console.log("Odebrane dane");
+        let interret = "";
+        for (let row of res.rows){
+            interret += `        <tr>`;
+            interret += `            <td>` + row.id + `</td>`;
+            interret += `            <td>` + row.name + `</td>`;
+            interret += `            <td>` + row.joined + `</td>`;
+            interret += `            <td>` + row.lastvisit + `</td>`;
+            interret += `            <td>` + row.counter + `</td>`;
+            interret += `        </tr>`;
+            console.log(JSON.stringify(row));
+        }
+        return interret;
+    })
+    if (insideTable != undefined) ret += insideTable;
     ret += `    </tbody>`;
     ret += `</table>`;
 
