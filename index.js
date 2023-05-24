@@ -208,7 +208,7 @@ app.get('/db', function (req, res) {
     let ret = "Check logs";
     let text = ""
     let insideTable = client.query('SELECT * FROM users').then((result1) => {
-    text+='
+    text+=`
     ID	NAME	JOINED	LASTVISIT	COUNTER	AUTHTYPE
     Dane z bazy
     `
