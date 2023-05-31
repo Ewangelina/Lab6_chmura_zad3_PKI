@@ -42,7 +42,7 @@ app.get('/temp', function (req, res)
     if (table) //has chosen table
     {
         let command = `SELECT * FROM  + table`;
-        client.query(command).then((error, response) => 
+        client.query(command).then((response, error) => 
         {
             if (error)
             {
@@ -72,7 +72,7 @@ app.get('/temp', function (req, res)
           Dropdown button
         </button>
         <ul class="dropdown-menu">`;
-        client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
+        client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response, error) => 
         {
             if (error)
             {
@@ -102,7 +102,7 @@ app.get('/temp', function (req, res)
     return
 
     
-    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
+    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response, error) => 
     {
         if (error)
         {
