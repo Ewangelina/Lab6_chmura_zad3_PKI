@@ -72,7 +72,7 @@ app.get('/temp', function (req, res)
           Dropdown button
         </button>
         <ul class="dropdown-menu">`;
-        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' AND tableowner = 'Ewangelina'").then((error, response) => 
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((error, response) => 
         {
             if (error)
             {
