@@ -42,15 +42,53 @@ app.get('/temp', function (req, res)
     if (table) //has chosen table
     {
         let command = `SELECT * FROM ` + table;
-        client.query(command).then((error, response) => 
+        ret += `<table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                      <th class="th-sm">Name
+                      </th>
+                      <th class="th-sm">Position
+                      </th>
+                      <th class="th-sm">Office
+                      </th>
+                      <th class="th-sm">Age
+                      </th>
+                      <th class="th-sm">Start date
+                      </th>
+                      <th class="th-sm">Salary
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Tiger Nixon</td>
+                      <td>System Architect</td>
+                      <td>Edinburgh</td>
+                      <td>61</td>
+                      <td>2011/04/25</td>
+                      <td>$320,800</td>
+                    </tr>
+                    <tr>
+                      <td>Garrett Winters</td>
+                      <td>Accountant</td>
+                      <td>Tokyo</td>
+                      <td>63</td>
+                      <td>2011/07/25</td>
+                      <td>$170,750</td>
+                    </tr>
+                    <tr>
+                      <td>Ashton Cox</td>
+                      <td>Junior Technical Author</td>
+                      <td>San Francisco</td>
+                      <td>66</td>
+                      <td>2009/01/12</td>
+                      <td>$86,000</td>
+                    </tr>
+                  </tbody>
+                </table>`
+        client.query(command).then((response) => 
         {
-            if (error)
-            {
-                res.send("Database connection error");
-                console.log(error);
-            }
-            else
-            {
+            
                 for (row in response)
                 {
                     ret += row + '<br>';
@@ -60,7 +98,7 @@ app.get('/temp', function (req, res)
                 ret += `</ul></div>`;
                 ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
                 res.send(ret);
-            }
+            
         });
         
     }
@@ -74,13 +112,7 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((error, response) => 
         {
-            if (error)
-            {
-                res.send("Database connection error");
-                console.log(error);
-            }
-            else
-            {
+           
                 for (row in response)
                 {
                     ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
@@ -89,7 +121,7 @@ app.get('/temp', function (req, res)
                 ret += `</ul></div>`;
                 ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
                 res.send(ret);
-            }
+            
         });
           
          
@@ -118,6 +150,7 @@ app.get('/temp', function (req, res)
     
    
 });
+
 
 app.get('/auth/github/callback', (req, res) => {
 
