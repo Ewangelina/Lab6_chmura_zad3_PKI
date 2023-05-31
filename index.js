@@ -38,11 +38,11 @@ app.get('/temp', function (req, res)
     connectDb();
     const table = req.query.table;
     ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    `;
+    Database: USER`;
     if (table) //has chosen table
     {
-        let command = `SELECT * FROM  + table`;
-        client.query(command).then((response, error) => 
+        let command = `SELECT * FROM ` + table;
+        client.query(command).then((error, response) => 
         {
             if (error)
             {
@@ -53,7 +53,7 @@ app.get('/temp', function (req, res)
             {
                 for (row in response)
                 {
-                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
+                    ret += row + '<br>';
                     console.log(row);
                 }
                 
@@ -72,7 +72,7 @@ app.get('/temp', function (req, res)
           Dropdown button
         </button>
         <ul class="dropdown-menu">`;
-        client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response, error) => 
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' AND tableowner = 'Ewangelina'").then((error, response) => 
         {
             if (error)
             {
@@ -84,7 +84,6 @@ app.get('/temp', function (req, res)
                 for (row in response)
                 {
                     ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
-                    console.log(row);
                 }
                 
                 ret += `</ul></div>`;
@@ -102,7 +101,7 @@ app.get('/temp', function (req, res)
     return
 
     
-    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response, error) => 
+    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
     {
         if (error)
         {
