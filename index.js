@@ -29,6 +29,97 @@ const sql = postgres(URL, { ssl: 'require' });
 app.set('view engine', 'ejs');
 var access_token = "";
 
+//https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
+//SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
+//SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
+
+app.get('/temp', function (req, res) 
+{
+    connectDb();
+    const table = req.query.table;
+    ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    `;
+    if (table) //has chosen table
+    {
+        let command = `SELECT * FROM  + table`;
+        client.query(command).then((error, response) => 
+        {
+            if (error)
+            {
+                res.send("Database connection error");
+                console.log(error);
+            }
+            else
+            {
+                for (row in response)
+                {
+                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
+                    console.log(row);
+                }
+                
+                ret += `</ul></div>`;
+                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                res.send(ret);
+            }
+        });
+        
+    }
+    else
+    {
+        
+        ret += `<div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+          Dropdown button
+        </button>
+        <ul class="dropdown-menu">`;
+        client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
+        {
+            if (error)
+            {
+                res.send("Database connection error");
+                console.log(error);
+            }
+            else
+            {
+                for (row in response)
+                {
+                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
+                    console.log(row);
+                }
+                
+                ret += `</ul></div>`;
+                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                res.send(ret);
+            }
+        });
+          
+         
+        
+        
+    }
+
+    disconnectDB();
+    return
+
+    
+    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
+    {
+        if (error)
+        {
+            console.log(error);
+        }
+        else
+        {
+            for (row in response)
+            {
+                console.log(row);
+            }
+        }
+    })
+    
+   
+});
+
 app.get('/auth/github/callback', (req, res) => {
 
     // The req.query object has the query params that were sent to this route.
