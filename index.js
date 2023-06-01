@@ -182,10 +182,11 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query(c).then((response) => 
         {
-            for (row in response.rows)
+            console.log(response.rows);
+            for (row in response.rows[0])
             {
-                console.log(row);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.json().tablename +`">` + row.json().tablename + `</a></li>`;
+                
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row + `</a></li>`;
             }
 
             ret += `</ul></div><br>`;
@@ -247,10 +248,10 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
         {
-            for (row in response.rows)
+            for (row in response.rows[0])
             {
                 console.log(row);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.json.tablename +`">` + row.json.tablename + `</a></li>`;
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row + `</a></li>`;
             }
 
             ret += `</ul></div>`;
