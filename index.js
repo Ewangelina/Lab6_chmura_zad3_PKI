@@ -88,7 +88,7 @@ app.post('/temp', function (req, res)
 {
     connectDb();
     lastSQL = req.query.command;
-    let ret = `{"content":"<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
+    let ret = `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
 
     if (lastSQL == "" || lastSQL == undefined)
     {
@@ -121,7 +121,7 @@ app.post('/temp', function (req, res)
                 }
                 
                 ret += `</tbody></table>`
-                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
+                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
                 res.send(ret);
             });
             
@@ -143,7 +143,7 @@ app.post('/temp', function (req, res)
             }
             
             ret += `</tbody></table>`
-            ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
+            ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
             res.send(ret);
         });
     }
