@@ -94,52 +94,35 @@ app.post('/temp', function (req, res)
     {
         lastSQL = "SELECT * FROM " + table;
         let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
-        client.query(first_command).then((error, names) => 
+        client.query(first_command).then((names) => 
         {
-            if (error)
+            for (row in names)
             {
-                ret += error;
-                res.send(ret);
-                console.log(error);
+                ret += `<th class="th-sm">row</th>`;
             }
-            else
+            
+            ret += `</tr>
+                </thead>
+                <tbody>`;
+            
+            client.query(lastSQL).then((response) => 
             {
-                for (row in names)
+                for (row in response)
                 {
-                    ret += `<th class="th-sm">row</th>`;
+                    ret += `<tr>`;
+                    for (element in row)
+                    {
+                        ret += `<td>` + element + `</td>`;
+                    }
+
+                    ret += `</tr>`;
                 }
                 
-                ret += `</tr>
-                  </thead>
-                  <tbody>`;
-                
-                client.query(lastSQL).then((error, response) => 
-                {
-                    if (error)
-                    {
-                        ret += error;
-                        res.send(ret);
-                        console.log(error);
-                    }
-                    else
-                    {
-                        for (row in response)
-                        {
-                            ret += `<tr>`;
-                            for (element in row)
-                            {
-                                ret += `<td>` + element + `</td>`;
-                            }
-
-                            ret += `</tr>`;
-                        }
-                        
-                        ret += `</tbody></table>`
-                        ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
-                        res.send(ret);
-                    }
-                });
-            }
+                ret += `</tbody></table>`
+                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                res.send(ret);
+            });
+            
         });
     }
     else
@@ -191,13 +174,27 @@ app.get('/temp', function (req, res)
                     <tr>`
     if (table) //has chosen table
     {
+        let c = `SELECT n.nspname as "Schema",
+            c.relname as "Name", 
+            CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as "Type",
+            pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
+            FROM pg_catalog.pg_class c
+                LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('r','')
+                AND n.nspname <> 'pg_catalog'
+                AND n.nspname <> 'information_schema'
+                AND n.nspname !~ '^pg_toast'
+            AND pg_catalog.pg_table_is_visible(c.oid)
+            ORDER BY 1,2;`;
+
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-          Dropdown button
+          Reselect table
         </button>
         <ul class="dropdown-menu">`;
-        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((response) => 
+        client.query(c).then((response) => 
         {
+            
             
             for (row in response)
             {
@@ -206,7 +203,7 @@ app.get('/temp', function (req, res)
 
             ret += `</ul></div><br>`;
             ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
-             ret += `<label>Tu wpisz komendę \|/</label>
+             ret += `<label>Tu wpisz komendę \\|/</label>
                 <button onclick="show_all()">Pokaż wszystko</button><br>
                 <input type="text" id="input" value="">
                 <button onclick="command()">Wyślij zapytanie</button>
@@ -258,12 +255,11 @@ app.get('/temp', function (req, res)
     {
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-          Dropdown button
-        </button>DATABASE: USER<br>
+          Select table
+        </button><br>
         <ul class="dropdown-menu">`;
-        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((response) => 
+        client.query("SELECT * FROM pg_catalog.pg_tables").then((response) => 
         {
-            
             for (row in response)
             {
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`" target="_blank">` + row + `</a></li>`;
