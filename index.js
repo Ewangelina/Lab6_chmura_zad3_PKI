@@ -259,7 +259,7 @@ app.get('/temp', function (req, res)
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
           Dropdown button
-        </button>
+        </button>DATABASE: USER<br>
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((response) => 
         {
@@ -308,10 +308,6 @@ app.get('/db', function (req, res) {
 });
 
 const connectDb = async () => {
-    if (connected)
-    {
-        return
-    }
      try {
        client = new Client({
        user: process.env.PGUSER,
@@ -325,9 +321,7 @@ const connectDb = async () => {
       await client.connect()
       //const res = await client.query('SELECT * FROM users')
       //console.log(res)
-      console.log("Opened database connection");
-      connected = true;
-      
+      console.log("Opened database connection");      
      } catch (error) {
       console.log(error)
      }
