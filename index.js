@@ -95,7 +95,7 @@ app.post('/temp', function (req, res)
     {
         lastSQL = "SELECT * FROM " + table;
         let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
-        client.query(first_command).then((names) => 
+        client.query(first_command).then((names, error) => 
         {
             console.log(names);
             return
@@ -132,7 +132,7 @@ app.post('/temp', function (req, res)
     }
     else
     {
-        client.query(lastSQL).then((response) => 
+        client.query(lastSQL).then((response, error) => 
         {
             for (row in response)
             {
@@ -184,7 +184,8 @@ app.get('/temp', function (req, res)
         {
             for (row in response.rows)
             {
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row.tablename + `</a></li>`;
+                console.log(row);
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.json().tablename +`">` + row.json().tablename + `</a></li>`;
             }
 
             ret += `</ul></div><br>`;
@@ -248,7 +249,8 @@ app.get('/temp', function (req, res)
         {
             for (row in response.rows)
             {
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row.tablename + `</a></li>`;
+                console.log(row);
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.json.tablename +`">` + row.json.tablename + `</a></li>`;
             }
 
             ret += `</ul></div>`;
