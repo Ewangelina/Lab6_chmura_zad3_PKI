@@ -168,7 +168,7 @@ app.get('/temp', function (req, res)
                     <tr>`
     if (table) //has chosen table
     {
-        let c = `SELECT * FROM public`;
+        let c = `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');`;
 
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
@@ -240,7 +240,7 @@ app.get('/temp', function (req, res)
           Select table
         </button><br>
         <ul class="dropdown-menu">`;
-        client.query("SELECT table_name FROM public").then((response) => 
+        client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
         {
             for (row in response)
             {
