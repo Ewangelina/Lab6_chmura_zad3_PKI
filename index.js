@@ -89,6 +89,7 @@ app.post('/temp', function (req, res)
     connectDb();
     lastSQL = req.query.command;
     let ret = `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
+    res.send(ret);
 
     if (lastSQL == "" || lastSQL == undefined)
     {
@@ -96,6 +97,8 @@ app.post('/temp', function (req, res)
         let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
         client.query(first_command).then((names) => 
         {
+            console.log(names);
+            return
             for (row in names)
             {
                 ret += `<th class='th-sm'>` + row + `</th>`;
@@ -133,6 +136,8 @@ app.post('/temp', function (req, res)
         {
             for (row in response)
             {
+                console.log(names);
+                return
                 ret += `<tr>`;
                 for (element in row)
                 {
@@ -177,9 +182,9 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query(c).then((response) => 
         {
-            for (row in response)
+            for (row in response.rows)
             {
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row.tablename + `</a></li>`;
             }
 
             ret += `</ul></div><br>`;
@@ -196,7 +201,7 @@ app.get('/temp', function (req, res)
                         const response = await fetch(window.location.href, {
                             method: 'POST',
                             headers: {
-                            'Accept': 'application/json',
+                            'Accept': 'text/html',
                             'Content-Type': 'application/json'
                             },
                             body: result
@@ -218,7 +223,7 @@ app.get('/temp', function (req, res)
                         const response = await fetch(window.location.href, {
                             method: 'POST',
                             headers: {
-                            'Accept': 'application/json',
+                            'Accept': 'text/html',
                             'Content-Type': 'application/json'
                             },
                             body: result
@@ -241,10 +246,9 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
         {
-            console.log(response.rows);
-            for (row in response.tablename)
+            for (row in response.rows)
             {
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row.tablename + `</a></li>`;
             }
 
             ret += `</ul></div>`;
