@@ -88,7 +88,7 @@ app.post('/temp', function (req, res)
 {
     connectDb();
     lastSQL = req.query.command;
-    let ret = `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
+    let ret = `{"content":"<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
 
     if (lastSQL == "" || lastSQL == undefined)
     {
@@ -96,7 +96,6 @@ app.post('/temp', function (req, res)
         let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
         client.query(first_command).then((names) => 
         {
-            console.log(names);
             for (row in names)
             {
                 ret += `<th class='th-sm'>` + row + `</th>`;
@@ -108,7 +107,6 @@ app.post('/temp', function (req, res)
             
             client.query(lastSQL).then((response) => 
             {
-                console.log(response);
                 for (row in response)
                 {
                     console.log(row);
@@ -123,7 +121,7 @@ app.post('/temp', function (req, res)
                 }
                 
                 ret += `</tbody></table>`
-                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
+                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
                 res.send(ret);
             });
             
@@ -145,7 +143,7 @@ app.post('/temp', function (req, res)
             }
             
             ret += `</tbody></table>`
-            ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
+            ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
             res.send(ret);
         });
     }
@@ -243,8 +241,8 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
         {
-            console.log(response);
-            for (row in response.rows)
+            console.log(response.rows);
+            for (row in response.tablename)
             {
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
             }
