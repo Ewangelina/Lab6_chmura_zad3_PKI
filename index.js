@@ -88,7 +88,7 @@ app.post('/temp', function (req, res)
 {
     connectDb();
     lastSQL = req.query.command;
-    let ret = '<a href="https://lab6-zad3.onrender.com/temp">RETURN</a>';
+    let ret = `{"content":"<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
 
     if (lastSQL == "" || lastSQL == undefined)
     {
@@ -98,7 +98,7 @@ app.post('/temp', function (req, res)
         {
             for (row in names)
             {
-                ret += `<th class="th-sm">row</th>`;
+                ret += `<th class='th-sm'>row</th>`;
             }
             
             ret += `</tr>
@@ -119,7 +119,7 @@ app.post('/temp', function (req, res)
                 }
                 
                 ret += `</tbody></table>`
-                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
                 res.send(ret);
             });
             
@@ -147,7 +147,7 @@ app.post('/temp', function (req, res)
                 }
                 
                 ret += `</tbody></table>`
-                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>"}`;
                 res.send(ret);
             }
         });
@@ -197,6 +197,7 @@ app.get('/temp', function (req, res)
             for (row in response)
             {
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`" target="_blank">` + row + `</a></li>`;
+                console.log(row);
             }
 
             ret += `</ul></div><br>`;
@@ -219,8 +220,8 @@ app.get('/temp', function (req, res)
                             body: result
                         });
                             
-                        const data = await response;
-                        document.write(data);
+                        const data = await response.json();
+                        document.write(data.content);
                     }
                 </script>
                 <script type="text/javascript">
@@ -241,8 +242,8 @@ app.get('/temp', function (req, res)
                             body: result
                         });
                             
-                        const data = await response;
-                        document.write(data);
+                        const data = await response.json();
+                        document.write(data.content);
                     }
                 </script>`;
             res.send(ret);
@@ -256,7 +257,7 @@ app.get('/temp', function (req, res)
           Select table
         </button><br>
         <ul class="dropdown-menu">`;
-        client.query("SELECT * FROM pg_catalog.pg_tables").then((response) => 
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema ='Database Name'").then((response) => 
         {
             for (row in response)
             {
