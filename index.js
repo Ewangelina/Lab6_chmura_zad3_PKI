@@ -248,6 +248,7 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
         {
+            console.log(response.rows[0]);
             for (row in response.rows[0])
             {
                 console.log(row);
