@@ -88,7 +88,7 @@ app.post('/temp', function (req, res)
 {
     connectDb();
     lastSQL = req.query.command;
-    let ret = '<a href="https://lab6-zad3.onrender.com/temp">link text</a>';
+    let ret = '<a href="https://lab6-zad3.onrender.com/temp">RETURN</a>';
 
     if (lastSQL == "" || lastSQL == undefined)
     {
