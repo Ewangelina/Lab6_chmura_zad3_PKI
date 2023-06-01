@@ -30,6 +30,7 @@ app.set('view engine', 'ejs');
 let access_token = "";
 let table = "";
 let lastSQL = "";
+let connected = false;
 
 
 app.get('/', (req, res) => {
@@ -280,25 +281,7 @@ app.get('/temp', function (req, res)
     }
 
     disconnectDB();
-    return
-
-    
-    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
-    {
-        if (error)
-        {
-            console.log(error);
-        }
-        else
-        {
-            for (row in response)
-            {
-                console.log(row);
-            }
-        }
-    })
-    
-   
+    return   
 });
 
 app.get('/db', function (req, res) {
@@ -325,6 +308,10 @@ app.get('/db', function (req, res) {
 });
 
 const connectDb = async () => {
+    if (connected)
+    {
+        return
+    }
      try {
        client = new Client({
        user: process.env.PGUSER,
@@ -339,6 +326,7 @@ const connectDb = async () => {
       //const res = await client.query('SELECT * FROM users')
       //console.log(res)
       console.log("Opened database connection");
+      connected = true;
       
      } catch (error) {
       console.log(error)
@@ -346,6 +334,7 @@ const connectDb = async () => {
     }
 
 const disconnectDB = async () => {
+    return
     setTimeout(function(){
         client.end();
         console.log("Closed database connection");
