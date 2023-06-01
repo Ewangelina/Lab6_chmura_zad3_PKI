@@ -194,8 +194,6 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query(c).then((response) => 
         {
-            
-            
             for (row in response)
             {
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`" target="_blank">` + row + `</a></li>`;
