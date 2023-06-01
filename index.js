@@ -17,7 +17,7 @@ const REDIRECT_URL = OAuth2Data.web.redirect_uris[0];
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL)
 let authed = false;
 let username = "";
-var oauth2;
+let oauth2;
 
 const clientID = "189a8fb8aff66b200a36";
 const clientSecret = "84ea18cd3fe49b8ea62f7417747c5a189359454a";
@@ -27,173 +27,10 @@ const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
 const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require?options=project%3D${ENDPOINT_ID}`;
 const sql = postgres(URL, { ssl: 'require' });
 app.set('view engine', 'ejs');
-var access_token = "";
+let access_token = "";
+let table = "";
+let lastSQL = "";
 
-//https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
-//SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
-//SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
-
-app.get('/temp', function (req, res) 
-{
-    connectDb();
-    const table = req.query.table;
-    ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    Database: USER`;
-    if (table) //has chosen table
-    {
-        let command = `SELECT * FROM ` + table;
-        ret += `<table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                  <thead>
-                    <tr>
-                      <th class="th-sm">Name
-                      </th>
-                      <th class="th-sm">Position
-                      </th>
-                      <th class="th-sm">Office
-                      </th>
-                      <th class="th-sm">Age
-                      </th>
-                      <th class="th-sm">Start date
-                      </th>
-                      <th class="th-sm">Salary
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Tiger Nixon</td>
-                      <td>System Architect</td>
-                      <td>Edinburgh</td>
-                      <td>61</td>
-                      <td>2011/04/25</td>
-                      <td>$320,800</td>
-                    </tr>
-                    <tr>
-                      <td>Garrett Winters</td>
-                      <td>Accountant</td>
-                      <td>Tokyo</td>
-                      <td>63</td>
-                      <td>2011/07/25</td>
-                      <td>$170,750</td>
-                    </tr>
-                    <tr>
-                      <td>Ashton Cox</td>
-                      <td>Junior Technical Author</td>
-                      <td>San Francisco</td>
-                      <td>66</td>
-                      <td>2009/01/12</td>
-                      <td>$86,000</td>
-                    </tr>
-                  </tbody>
-                </table>`
-        client.query(command).then((response) => 
-        {
-            
-                for (row in response)
-                {
-                    ret += row + '<br>';
-                    console.log(row);
-                }
-                
-                ret += `</ul></div>`;
-                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
-                res.send(ret);
-            
-        });
-        
-    }
-    else
-    {
-        
-        ret += `<div class="dropdown">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-          Dropdown button
-        </button>
-        <ul class="dropdown-menu">`;
-        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'").then((error, response) => 
-        {
-           
-                for (row in response)
-                {
-                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`">` + row + `</a></li>`;
-                }
-                
-                ret += `</ul></div>`;
-                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
-                res.send(ret);
-            
-        });
-          
-         
-        
-        
-    }
-
-    disconnectDB();
-    return
-
-    
-    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
-    {
-        if (error)
-        {
-            console.log(error);
-        }
-        else
-        {
-            for (row in response)
-            {
-                console.log(row);
-            }
-        }
-    })
-    
-   
-});
-
-
-app.get('/auth/github/callback', (req, res) => {
-
-    // The req.query object has the query params that were sent to this route.
-    const requestToken = req.query.code
-    
-    axios({
-      method: 'post',
-      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
-      // Set the content type header, so that we get the response in JSON
-      headers: {
-           accept: 'application/json'
-      }
-    }).then((response) => {
-      access_token = response.data.access_token;
-      username = response.data.toString();
-      console.log(response.data);
-      res.redirect('/success');
-    })
-  })
-  
-  app.get('/success', function(req, res) { //Github success
-    let ret = "";
-    ret += `<!DOCTYPE html>`;
-    ret += `<html lang="en">`;
-    ret += `<head>`;
-    ret += `    <meta charset="utf-8">`;
-    ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
-    ret += `    <title>` + username + `</title>`;
-    ret += `    <!-- Bootstrap CSS -->`;
-    ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
-    ret += `</head>`;
-    ret += `<body>`;
-    ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
-    ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
-    ret += `    <div class="container">`;
-    ret += `        <h1>Logged in through Github</h1>`;
-    ret += `        <p>` + username + `</p>`;
-    ret += `    </div>`;
-    ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
-
-    res.send(ret);
-  });
 
 app.get('/', (req, res) => {
     let ret = "";
@@ -246,83 +83,222 @@ app.get('/', (req, res) => {
     res.send(ret)
 });
 
-app.get('/googleout', (req, res) => {
-  authed = false;
-  username = "";
-  try
-  {
-      var auth2 = gapi.auth2.getAuthInstance();
-      auth2.signOut().then(function () {
-          console.log('User signed out.');
-          res.send("Logged out");
-      });
-  }
-  catch (err)
-  {
-    res.send("Logged out");
-  }    
-  
-  
-});
+app.post('/temp', function (req, res) 
+{
+    connectDb();
+    lastSQL = req.query.command;
+    let ret = '<a href="https://lab6-zad3.onrender.com/temp">link text</a>';
 
-app.get('/google', (req, res) => {
-    if (!authed) {
-        // Generate an OAuth URL and redirect there
-        const url = oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: 'https://www.googleapis.com/auth/userinfo.profile'
-        });
-        //console.log(url)
-        res.redirect(url);
-    } else {
-        oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
-        oauth2.userinfo.v2.me.get(function(err, result) {
-            if (err) return console.log('Returned an error: ' + err);
+    if (lastSQL == "" || lastSQL == undefined)
+    {
+        lastSQL = "SELECT * FROM " + table;
+        let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
+        client.query(first_command).then((error, names) => 
+        {
+            if (error)
+            {
+                ret += error;
+                res.send(ret);
+                console.log(error);
+            }
             else
             {
-                username = result.data.name;
-            }
-        });
+                for (row in names)
+                {
+                    ret += `<th class="th-sm">row</th>`;
+                }
+                
+                ret += `</tr>
+                  </thead>
+                  <tbody>`;
+                
+                client.query(lastSQL).then((error, response) => 
+                {
+                    if (error)
+                    {
+                        ret += error;
+                        res.send(ret);
+                        console.log(error);
+                    }
+                    else
+                    {
+                        for (row in response)
+                        {
+                            ret += `<tr>`;
+                            for (element in row)
+                            {
+                                ret += `<td>` + element + `</td>`;
+                            }
 
-        let ret = "";
-        ret += `<!DOCTYPE html>`;
-        ret += `<html lang="en">`;
-        ret += `<head>`;
-        ret += `    <meta charset="utf-8">`;
-        ret += `    <meta name="viewport" content="width=device-width, initial-scale=1">`;
-        ret += `    <title>` + username + `</title>`;
-        ret += `    <!-- Bootstrap CSS -->`;
-        ret += `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">`;
-        ret += `</head>`;
-        ret += `<body>`;
-        ret += `    <!-- Bootstrap JS Bundle with Popper -->`;
-        ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>`;
-        ret += `    <div class="container">`;
-        ret += `        <h1>Logged in with Google</h1>`;
-        ret += `        <p>` + username + `</p>`;
-        ret += `    </div>`;
-        ret += `<a href="https://lab6-zad3.onrender.com/" >HOMEPAGE</a>`;
-
-        res.send(ret);       
-    }
-})
-
-app.get('/auth/google/callback', function (req, res) {
-    const code = req.query.code
-    if (code) {
-        // Get an access token based on our OAuth code
-        oAuth2Client.getToken(code, function (err, tokens) {
-            if (err) {
-                console.log('Error authenticating')
-                console.log(err);
-            } else {
-                console.log('Successfully authenticated');
-                oAuth2Client.setCredentials(tokens);
-                authed = true;
-                res.redirect('/google')
+                            ret += `</tr>`;
+                        }
+                        
+                        ret += `</tbody></table>`
+                        ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                        res.send(ret);
+                    }
+                });
             }
         });
     }
+    else
+    {
+        client.query(lastSQL).then((error, response) => 
+        {
+            if (error)
+            {
+                res.send(error);
+            }
+            else
+            {
+                for (row in response)
+                {
+                    ret += `<tr>`;
+                    for (element in row)
+                    {
+                        ret += `<td>` + element + `</td>`;
+                    }
+
+                    ret += `</tr>`;
+                }
+                
+                ret += `</tbody></table>`
+                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                res.send(ret);
+            }
+        });
+    }
+    disconnectDB();
+});
+
+//https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
+//SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
+//SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
+
+//https://mdbootstrap.com/docs/b4/jquery/tables/sort/
+app.get('/temp', function (req, res) 
+{
+    connectDb();
+    table = req.query.table;
+    ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    Database: USER<br>`;
+    ret += `<script>$(document).ready(function () {
+  $('#dtBasicExample').DataTable();
+  $('.dataTables_length').addClass('bs-select');
+});</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>`
+    if (table) //has chosen table
+    {
+        ret += `<div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+          Dropdown button
+        </button>
+        <ul class="dropdown-menu">`;
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((response) => 
+        {
+            
+            for (row in response)
+            {
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`" target="_blank">` + row + `</a></li>`;
+            }
+
+            ret += `</ul></div><br>`;
+            ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+             ret += `<label>Tu wpisz komendę \|/</label>
+                <button onclick="show_all()">Pokaż wszystko</button><br>
+                <input type="text" id="input" value="">
+                <button onclick="command()">Wyślij zapytanie</button>
+
+                <script type="text/javascript">
+                    async function show_all()
+                    {
+                        const result = '{"command":""}';
+                        const response = await fetch(window.location.href, {
+                            method: 'POST',
+                            headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                            },
+                            body: result
+                        });
+                            
+                        const data = await response;
+                        document.write(data);
+                    }
+                </script>
+                <script type="text/javascript">
+                    async function command()
+                    {
+                        const c = document.getElementById('input').value;
+                        if (c == "")
+                        {
+                            return
+                        }
+                        let result = '{"command":"' + c + '"}';
+                        const response = await fetch(window.location.href, {
+                            method: 'POST',
+                            headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                            },
+                            body: result
+                        });
+                            
+                        const data = await response;
+                        document.write(data);
+                    }
+                </script>`;
+            res.send(ret);
+            
+        });        
+    }
+    else
+    {
+        ret += `<div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+          Dropdown button
+        </button>
+        <ul class="dropdown-menu">`;
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'").then((response) => 
+        {
+            
+            for (row in response)
+            {
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row +`" target="_blank">` + row + `</a></li>`;
+            }
+
+            ret += `</ul></div>`;
+            ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+            res.send(ret);
+            
+        });
+          
+         
+        
+        
+    }
+
+    disconnectDB();
+    return
+
+    
+    client.query("SELECT * FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((error, response) => 
+    {
+        if (error)
+        {
+            console.log(error);
+        }
+        else
+        {
+            for (row in response)
+            {
+                console.log(row);
+            }
+        }
+    })
+    
+   
 });
 
 app.get('/db', function (req, res) {
@@ -373,7 +349,7 @@ const disconnectDB = async () => {
     setTimeout(function(){
         client.end();
         console.log("Closed database connection");
-    }, 5000);
+    }, 2000);
 }
     
 
