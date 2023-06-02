@@ -158,12 +158,6 @@ app.post('/temp', function (req, res)
     }
 });
 
-app.get('/test', function (req, res) 
-{
-    const c = '[ { "table_name": "users" }, { "table_name": "things" } ]';
-    const rowsJSON = JSON.parse(c);
-    console.log(rowsJSON[0])
-});
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
 //SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
