@@ -162,11 +162,9 @@ app.get('/temp', function (req, res)
                 console.log(response.rows[0]);
                 console.log("*/**-------+++++++");
                 console.log(response.rows[1]);
-                for (row in response.rows)
+                for (let i = 0; i < len(response.rows); i+=1)
                 {
-                    let name = row.split("'");
-                    console.log(name);
-                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + name[1] +`">` + name[1] + `</a></li>`;
+                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i] +`">` + response.rows[i] + `</a></li>`;
                 }
 
                 ret += `</ul></div><br>`;
@@ -179,7 +177,7 @@ app.get('/temp', function (req, res)
                     <script type="text/javascript">
                         async function show_all()
                         {
-                            window.location.href = window.location.href + "&command=*;
+                            window.location.href = window.location.href + "&command=*";
                         }
                     </script>
                     <script type="text/javascript">
@@ -191,7 +189,7 @@ app.get('/temp', function (req, res)
                                 return
                             }
                             c = c.replace(" ","%20");
-                            window.location.href = window.location.href + "&command=*;
+                            window.location.href = window.location.href + "&command=" + c;
                         }
                     </script>`;
                 res.send(ret);
@@ -218,10 +216,10 @@ app.get('/temp', function (req, res)
             console.log(response.rows);
             console.log("-------+++++++");
             console.log("++++++++");
-            for (row in response.rows)
+            for (table_name in response.rows)
             {
-                console.log(row);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row + `</a></li>`;
+                console.log(table_name);
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + table_name +`">` + table_name + `</a></li>`;
             }
 
             ret += `</ul></div>`;
