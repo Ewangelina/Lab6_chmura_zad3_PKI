@@ -125,6 +125,10 @@ app.get('/temp', function (req, res)
             lastSQL = sql;
             let tempTable = getTable(sql);
             let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
+            ret += `<script>$(document).ready(function () {
+                $('#dtBasicExample').DataTable();
+                $('.dataTables_length').addClass('bs-select');
+              });</script>`
             ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>
                     <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
                     <thead>
@@ -147,13 +151,13 @@ app.get('/temp', function (req, res)
                     }
                     else
                     {
-                        console.log(response.rows);
-                        for (var j = 0; j < response.rows.length; j++)
+                        console.log(response.rows[0]);
+                        for (var j = 0; j < response.rows[0].length; j++)
                         {
                             ret += `<tr>`;
-                            for (var i = 0; i < response.rows[j].length; i++)
+                            for (var i = 0; i < response.rows[0][j].length; i++)
                             {
-                                ret += `<td>` + response.rows[j][i] + `</td>`;
+                                ret += `<td>` + response.rows[0][j][i] + `</td>`;
                             }
 
                             ret += `</tr>`;
