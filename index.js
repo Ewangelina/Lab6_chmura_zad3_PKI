@@ -162,7 +162,7 @@ app.get('/temp', function (req, res)
                 console.log(response.rows[0]);
                 console.log("*/**-------+++++++");
                 console.log(response.rows[1]);
-                for (let i = 0; i < len(response.rows); i+=1)
+                for (let i = 0; i < response.rows.length; i+=1)
                 {
                     ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i] +`">` + response.rows[i] + `</a></li>`;
                 }
@@ -211,16 +211,14 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');").then((response) => 
         {
-            console.log(response);
             console.log("-------");
             console.log(response.rows);
             console.log("-------+++++++");
+            for (let i = 0; i < arr.length; i++) {
+                console.log(response.rows[i].table_name);
+              }
             console.log("++++++++");
-            for (table_name in response.rows)
-            {
-                console.log(table_name);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + table_name +`">` + table_name + `</a></li>`;
-            }
+            response.rows.forEach(obj => ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + table_name +`">` + table_name + `</a></li>`);
 
             ret += `</ul></div>`;
             ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
