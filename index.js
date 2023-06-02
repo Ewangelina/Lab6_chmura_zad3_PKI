@@ -83,6 +83,19 @@ app.get('/', (req, res) => {
     res.send(ret)
 });
 
+function getTable(command)
+{
+    let words = command.split(" ");
+    for (var i = 0; i < words.length; i++)
+    {
+        if (words[i].toLowerCase() == "from")
+        {
+            return words[i+1];
+        }
+    }
+    
+    return '';
+}
 
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
@@ -110,31 +123,50 @@ app.get('/temp', function (req, res)
                 sql = sql.replace("%20", " ");
             }
             lastSQL = sql;
-            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`
-            client.query(lastSQL).then((response, error) => 
+            let tempTable = getTable(sql);
+            let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
+            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'
+                    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>`;
+            client.query(columnCommand).then((innerResponse, error) => 
             {
-                if (error)
+                console.log(innerResponse);
+                for (let i = 0; i < innerResponse.rows.length; i++) 
                 {
-                    ret = error
+                    ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
                 }
-                else
-                {
-                    for (row in response.rows)
-                    {
-                        ret += `<tr>`;
-                        for (var i = 0; i < row.length; i++)
-                        {
-                            ret += `<td>` + row[i] + `</td>`;
-                        }
+                ret += `</tr>
+                        </thead>
+                        <tbody>`;
 
-                        ret += `</tr>`;
+                client.query(lastSQL).then((response, error) => 
+                {
+                    if (error)
+                    {
+                        ret = error
                     }
-                    ret += `</tbody></table>`
-                    ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
-                }
-                
-                res.send(ret);
+                    else
+                    {
+                        for (row in response.rows)
+                        {
+                            console.log(row);
+                            ret += `<tr>`;
+                            for (var i = 0; i < row.length; i++)
+                            {
+                                ret += `<td>` + row[i] + `</td>`;
+                            }
+
+                            ret += `</tr>`;
+                        }
+                        ret += `</tbody></table>`
+                        ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
+                    }
+                    
+                    res.send(ret);
+                });
             });
+            
 
         }
         else
