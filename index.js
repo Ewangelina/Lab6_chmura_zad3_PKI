@@ -125,14 +125,13 @@ app.get('/temp', function (req, res)
             lastSQL = sql;
             let tempTable = getTable(sql);
             let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
-            ret += `<script>$(document).ready(function () {
-                $('#dtBasicExample').DataTable();
-                $('.dataTables_length').addClass('bs-select');
-              });</script>`
-            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>
-                    <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                    <thead>
-                        <tr>`;
+            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>`;
+            ret += `<script>$(document).ready(function() {
+                $('#example').DataTable();
+              });</script> <link href=https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/css/dataTables.bootstrap4.min.css rel=stylesheet>
+              <table cellspacing=0 class="table table-bordered table-hover table-inverse table-striped"id=example width=100%>
+              <thead><tr>`
+            
             client.query(columnCommand).then((innerResponse, error) => 
             {
                 for (let i = 0; i < innerResponse.rows.length; i++) 
@@ -151,19 +150,22 @@ app.get('/temp', function (req, res)
                     }
                     else
                     {
-                        console.log(response.rows[0]);
-                        for (var j = 0; j < response.rows[0].length; j++)
+                        
+                        for (var j = 0; j < response.rows.length; j++)
                         {
+                            //console.log(response.rows[0]); -> { id: 1, name: 'przyklad', joined: 0, lastvisit: 0, counter: 0 }
+                            let valuesArray = Object.values(response.rows[j]);
+                            console.log(valuesArray);
                             ret += `<tr>`;
-                            for (var i = 0; i < response.rows[0][j].length; i++)
+                            for (var i = 0; i < valuesArray.length; i++)
                             {
-                                ret += `<td>` + response.rows[0][j][i] + `</td>`;
+                                ret += `<td>` + valuesArray[i] + `</td>`;
                             }
 
                             ret += `</tr>`;
                         }
                         ret += `</tbody></table>`
-                        ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
+                        ret += `<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/jquery.dataTables.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/dataTables.bootstrap4.min.js></script>`;
                     }
                     
                     res.send(ret);
@@ -226,16 +228,10 @@ app.get('/temp', function (req, res)
     }
     else
     {
-        ret += `<script>$(document).ready(function () {
-            $('#dtBasicExample').DataTable();
-            $('.dataTables_length').addClass('bs-select');
-          });</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                            <thead>
-                              <tr>`
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
           Select table
-        </button><br>
+        </button>
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');").then((response) => 
         {
