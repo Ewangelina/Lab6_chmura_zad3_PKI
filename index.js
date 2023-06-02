@@ -164,7 +164,7 @@ app.get('/temp', function (req, res)
                 console.log(response.rows[1]);
                 for (let i = 0; i < response.rows.length; i+=1)
                 {
-                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i] +`">` + response.rows[i] + `</a></li>`;
+                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i].toString() +`">` + response.rows[i].toString() + `</a></li>`;
                 }
 
                 ret += `</ul></div><br>`;
@@ -183,7 +183,7 @@ app.get('/temp', function (req, res)
                     <script type="text/javascript">
                         async function command()
                         {
-                            const c = document.getElementById('input').value;
+                            let c = document.getElementById('input').value;
                             if (c == "")
                             {
                                 return
@@ -214,7 +214,7 @@ app.get('/temp', function (req, res)
             console.log("-------");
             console.log(response.rows);
             console.log("-------+++++++");
-            for (let i = 0; i < arr.length; i++) {
+            for (let i = 0; i < response.rows.length; i++) {
                 console.log(response.rows[i].table_name);
               }
             console.log("++++++++");
