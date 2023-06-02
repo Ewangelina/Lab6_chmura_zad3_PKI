@@ -30,7 +30,6 @@ app.set('view engine', 'ejs');
 let access_token = "";
 let table = "";
 let lastSQL = "";
-let connected = false;
 
 
 app.get('/', (req, res) => {
@@ -84,79 +83,6 @@ app.get('/', (req, res) => {
     res.send(ret)
 });
 
-app.post('/temp', function (req, res) 
-{
-    connectDb();
-    lastSQL = req.query.command;
-    let ret = `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`;
-    res.send(ret);
-
-    if (lastSQL == "" || lastSQL == undefined)
-    {
-        lastSQL = "SELECT * FROM " + table;
-        let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
-        client.query(first_command).then((names, error) => 
-        {
-            console.log(names.rows);
-            console.log("\\\\\\\\\\\\");
-            console.log(names.rows[0]);
-            return
-            for (column_name in rows)
-            {
-                ret += `<th class='th-sm'>` + column_name + `</th>`;
-            }
-            
-            ret += `</tr>
-                </thead>
-                <tbody>`;
-            
-            client.query(lastSQL).then((response) => 
-            {
-                for (row in response)
-                {
-                    console.log(row);
-                    ret += `<tr>`;
-                    for (element in row)
-                    {
-                        ret += `<td>` + element + `</td>`;
-                        
-                    }
-
-                    ret += `</tr>`;
-                }
-                
-                ret += `</tbody></table>`
-                ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
-                res.send(ret);
-            });
-            
-        });
-    }
-    else
-    {
-        client.query(lastSQL).then((response, error) => 
-        {
-            for (row in response)
-            {
-                console.log(names.rows);
-                console.log("\\\\\\\\\\\\");
-                console.log(names.rows[0]);
-                return
-                ret += `<tr>`;
-                for (element in row)
-                {
-                    ret += `<td>` + element + `</td>`;
-                }
-
-                ret += `</tr>`;
-            }
-            return
-            ret += `</tbody></table>`
-            ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
-            res.send(ret);
-        });
-    }
-});
 
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
@@ -167,94 +93,119 @@ app.get('/temp', function (req, res)
 {
     connectDb();
     table = req.query.table;
+    let sql = req.query.command;
     ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     Database: USER<br>`;
-    ret += `<script>$(document).ready(function () {
-  $('#dtBasicExample').DataTable();
-  $('.dataTables_length').addClass('bs-select');
-});</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                  <thead>
-                    <tr>`
+    
     if (table) //has chosen table
     {
-        let c = `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');`;
-
-        ret += `<div class="dropdown">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-          Reselect table
-        </button>
-        <ul class="dropdown-menu">`;
-        client.query(c).then((response) => 
+        if (sql) //widok (wyświetlanie tabeli)
         {
-            console.log(response);
-            console.log("***-------");
-            console.log(response.rows[0]);
-            console.log("*/**-------+++++++");
-            console.log(response.rows[1]);
-            /****-------
-Jun 2 09:22:58 AM  { table_name: 'users' }
-Jun 2 09:22:58 AM  ---
-Jun 2 09:22:58 AM  { table_name: 'things' }
-*/
-            for (row in response.rows)
+            if (sql == "*")
             {
-                let name = row.split("'");
-                console.log(name[0]);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row.table_name + `</a></li>`;
+                sql = "SELECT * FROM " + table;
             }
-
-            ret += `</ul></div><br>`;
-            ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
-             ret += `<label>Tu wpisz komendę \\|/</label>
-                <button onclick="show_all()">Pokaż wszystko</button><br>
-                <input type="text" id="input" value="">
-                <button onclick="command()">Wyślij zapytanie</button>
-
-                <script type="text/javascript">
-                    async function show_all()
+            else
+            {
+                sql = sql.replace("%20", " ");
+            }
+            lastSQL = sql;
+            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'`
+            client.query(lastSQL).then((response, error) => 
+            {
+                if (error)
+                {
+                    ret = error
+                }
+                else
+                {
+                    console.log("'''''''''")
+                    console.log(response)
+                    console.log("'''''''''")
+                    for (row in response)
                     {
-                        const result = '{"command":""}';
-                        const response = await fetch(window.location.href, {
-                            method: 'POST',
-                            headers: {
-                            'Accept': 'text/html',
-                            'Content-Type': 'application/json'
-                            },
-                            body: result
-                        });
-                            
-                        const data = await response.json();
-                        document.write(data);
-                    }
-                </script>
-                <script type="text/javascript">
-                    async function command()
-                    {
-                        const c = document.getElementById('input').value;
-                        if (c == "")
+                        ret += `<tr>`;
+                        for (element in row)
                         {
-                            return
+                            ret += `<td>` + element + `</td>`;
                         }
-                        let result = '{"command":"' + c + '"}';
-                        const response = await fetch(window.location.href, {
-                            method: 'POST',
-                            headers: {
-                            'Accept': 'text/html',
-                            'Content-Type': 'application/json'
-                            },
-                            body: result
-                        });
-                            
-                        const data = await response.json();
-                        document.write(data);
+
+                        ret += `</tr>`;
                     }
-                </script>`;
-            res.send(ret);
-            
-        });        
+                    ret += `</tbody></table>`
+                    ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
+                }
+                
+                res.send(ret);
+            });
+
+        }
+        else
+        {
+            ret += `<script>$(document).ready(function () {
+                $('#dtBasicExample').DataTable();
+                $('.dataTables_length').addClass('bs-select');
+              });</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                                <thead>
+                                  <tr>`
+            let c = `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');`;
+
+            ret += `<div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+            Reselect table
+            </button>
+            <ul class="dropdown-menu">`;
+            client.query(c).then((response) => 
+            {
+                console.log(response);
+                console.log("***-------");
+                console.log(response.rows[0]);
+                console.log("*/**-------+++++++");
+                console.log(response.rows[1]);
+                for (row in response.rows)
+                {
+                    let name = row.split("'");
+                    console.log(name);
+                    ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + name[1] +`">` + name[1] + `</a></li>`;
+                }
+
+                ret += `</ul></div><br>`;
+                ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+                ret += `<label>Tu wpisz komendę \\|/</label>
+                    <button onclick="show_all()">Pokaż wszystko</button><br>
+                    <input type="text" id="input" value="` + lastSQL + `">
+                    <button onclick="command()">Wyślij zapytanie</button>
+
+                    <script type="text/javascript">
+                        async function show_all()
+                        {
+                            window.location.href = window.location.href + "&command=*;
+                        }
+                    </script>
+                    <script type="text/javascript">
+                        async function command()
+                        {
+                            const c = document.getElementById('input').value;
+                            if (c == "")
+                            {
+                                return
+                            }
+                            c = c.replace(" ","%20");
+                            window.location.href = window.location.href + "&command=*;
+                        }
+                    </script>`;
+                res.send(ret);
+            });  
+        }      
     }
     else
     {
+        ret += `<script>$(document).ready(function () {
+            $('#dtBasicExample').DataTable();
+            $('.dataTables_length').addClass('bs-select');
+          });</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                            <thead>
+                              <tr>`
         ret += `<div class="dropdown">
         <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
           Select table
@@ -262,7 +213,6 @@ Jun 2 09:22:58 AM  { table_name: 'things' }
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');").then((response) => 
         {
-            const rowsJSON = JSON.parse(response.rows);
             console.log(response);
             console.log("-------");
             console.log(response.rows);
