@@ -139,6 +139,7 @@ app.get('/temp', function (req, res)
         }
         else
         {
+            ret += `Table: ` + table + "<br>";
             ret += `<script>$(document).ready(function () {
                 $('#dtBasicExample').DataTable();
                 $('.dataTables_length').addClass('bs-select');
@@ -206,16 +207,15 @@ app.get('/temp', function (req, res)
             for (let i = 0; i < response.rows.length; i++) 
             {
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i].table_name +`">` + response.rows[i].table_name + `</a></li>`;
-            }            
+            }          
+            ret += `</ul></div><br>`;
+            ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+            res.send(ret);
+
         });
-          
-         
-        
-        
     }
 
     disconnectDB();
-    return   
 });
 
 app.get('/db', function (req, res) {
