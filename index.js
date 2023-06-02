@@ -97,11 +97,13 @@ app.post('/temp', function (req, res)
         let first_command = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`;
         client.query(first_command).then((names, error) => 
         {
-            console.log(names);
+            console.log(names.rows);
+            console.log("\\\\\\\\\\\\");
+            console.log(names.rows[0]);
             return
-            for (row in names)
+            for (column_name in rows)
             {
-                ret += `<th class='th-sm'>` + row + `</th>`;
+                ret += `<th class='th-sm'>` + column_name + `</th>`;
             }
             
             ret += `</tr>
@@ -136,7 +138,9 @@ app.post('/temp', function (req, res)
         {
             for (row in response)
             {
-                console.log(names);
+                console.log(names.rows);
+                console.log("\\\\\\\\\\\\");
+                console.log(names.rows[0]);
                 return
                 ret += `<tr>`;
                 for (element in row)
@@ -146,7 +150,7 @@ app.post('/temp', function (req, res)
 
                 ret += `</tr>`;
             }
-            
+            return
             ret += `</tbody></table>`
             ret += `    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous'></script>`;
             res.send(ret);
@@ -182,11 +186,15 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query(c).then((response) => 
         {
-            console.log(response.rows);
+            console.log(response);
+            console.log("***-------");
+            console.log(response.rows[0]);
+            console.log("*/**-------+++++++");
+            console.log(response.rows[1]);
             for (row in response.rows[0])
             {
                 
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row + `</a></li>`;
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row + `</a></li>`;
             }
 
             ret += `</ul></div><br>`;
@@ -246,13 +254,17 @@ app.get('/temp', function (req, res)
           Select table
         </button><br>
         <ul class="dropdown-menu">`;
-        client.query("SELECT tablename FROM pg_catalog.pg_tables where tableowner = 'Ewangelina'").then((response) => 
+        client.query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');").then((response) => 
         {
-            console.log(response.rows[0]);
-            for (row in response.rows[0])
+            console.log(response);
+            console.log("-------");
+            console.log(response.rows);
+            console.log("-------+++++++");
+            console.log(response.rows[1]);
+            for (row in response.rows[1])
             {
                 console.log(row);
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.tablename +`">` + row + `</a></li>`;
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row + `</a></li>`;
             }
 
             ret += `</ul></div>`;
