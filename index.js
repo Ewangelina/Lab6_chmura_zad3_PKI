@@ -125,13 +125,12 @@ app.get('/temp', function (req, res)
             lastSQL = sql;
             let tempTable = getTable(sql);
             let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
-            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>'
+            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>
                     <table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
                     <thead>
                         <tr>`;
             client.query(columnCommand).then((innerResponse, error) => 
             {
-                console.log(innerResponse);
                 for (let i = 0; i < innerResponse.rows.length; i++) 
                 {
                     ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
@@ -148,13 +147,13 @@ app.get('/temp', function (req, res)
                     }
                     else
                     {
-                        for (row in response.rows)
+                        console.log(response.rows);
+                        for (var j = 0; j < response.rows.length; j++)
                         {
-                            console.log(row);
                             ret += `<tr>`;
-                            for (var i = 0; i < row.length; i++)
+                            for (var i = 0; i < response.rows[j].length; i++)
                             {
-                                ret += `<td>` + row[i] + `</td>`;
+                                ret += `<td>` + response.rows[j][i] + `</td>`;
                             }
 
                             ret += `</tr>`;
