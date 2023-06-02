@@ -158,6 +158,12 @@ app.post('/temp', function (req, res)
     }
 });
 
+app.get('/test', function (req, res) 
+{
+    const c = '[ { "table_name": "users" }, { "table_name": "things" } ]';
+    const rowsJSON = JSON.parse(c);
+    console.log(rowsJSON[0])
+});
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
 //SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
@@ -191,10 +197,16 @@ app.get('/temp', function (req, res)
             console.log(response.rows[0]);
             console.log("*/**-------+++++++");
             console.log(response.rows[1]);
-            for (row in response.rows[0])
+            /****-------
+Jun 2 09:22:58 AM  { table_name: 'users' }
+Jun 2 09:22:58 AM  ---
+Jun 2 09:22:58 AM  { table_name: 'things' }
+*/
+            for (row in response.rows)
             {
-                
-                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row + `</a></li>`;
+                let name = row.split("'");
+                console.log(name[0]);
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row.table_name + `</a></li>`;
             }
 
             ret += `</ul></div><br>`;
@@ -256,12 +268,13 @@ app.get('/temp', function (req, res)
         <ul class="dropdown-menu">`;
         client.query("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');").then((response) => 
         {
+            const rowsJSON = JSON.parse(response.rows);
             console.log(response);
             console.log("-------");
             console.log(response.rows);
             console.log("-------+++++++");
-            console.log(response.rows[1]);
-            for (row in response.rows[1])
+            console.log("++++++++");
+            for (row in response.rows)
             {
                 console.log(row);
                 ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + row.table_name +`">` + row + `</a></li>`;
