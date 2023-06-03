@@ -352,6 +352,9 @@ app.get('/temp', function (req, res)
     }
 
     disconnectDB();
+}).catch(function (req, res) {
+    console.log("Promise Rejected");
+    res.send("Could not process query");
 });
 
 app.get('/db', function (req, res) {
