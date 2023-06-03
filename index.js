@@ -97,6 +97,60 @@ function getTable(command)
     return '';
 }
 
+app.get('/test', function(req, res)
+{
+    ret = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    </head>
+    <body>
+    <div class="container" style="width:100%";>
+    <p>Databse: USER<br>Table: ` + table + `</p>
+    <table class="table table-striped table-bordered" id="sortTable">
+    <thead>
+    <tr>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Adam</td>
+    <td>joo</td>
+    <td>Jadamj@yahoo.com</td>
+    </tr>
+    <tr>
+    <td>seri</td>
+    <td>sami</td>
+    <td>ami_seri@rediff.com</td>
+    </tr>
+    <tr>
+    <td>zeniya</td>
+    <td>deo</td>
+    <td>zee@gmail.com</td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    <script>
+    $('#sortTable').DataTable();
+    </script>
+    </body>
+    </html>`;
+    
+    res.send(ret);
+});
+
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
 //SELECT column_name FROM information_schema.columns WHERE table_name = 'users'; <- columns
@@ -107,7 +161,7 @@ app.get('/temp', function (req, res)
     connectDb();
     table = req.query.table;
     let sql = req.query.command;
-    ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    let ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     Database: USER<br>`;
     
     if (table) //has chosen table
@@ -125,12 +179,25 @@ app.get('/temp', function (req, res)
             lastSQL = sql;
             let tempTable = getTable(sql);
             let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
-            ret += `<a href='https://lab6-zad3.onrender.com/temp'>RETURN</a>`;
-            ret += `<script>$(document).ready(function() {
-                $('#example').DataTable();
-              });</script> <link href=https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css rel=stylesheet><link href=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/css/dataTables.bootstrap4.min.css rel=stylesheet>
-              <table cellspacing=0 class="table table-bordered table-hover table-inverse table-striped"id=example width=100%>
-              <thead><tr>`
+            ret = `<!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+                    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+                    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+                    </head>
+                    <body>
+                    <div class="container" style="width:100%";>
+                    <p>Databse: USER<br>Table: ` + table + `</p>
+                    <table class="table table-striped table-bordered" id="sortTable">
+                    <thead>
+                    <tr>`
             
             client.query(columnCommand).then((innerResponse, error) => 
             {
@@ -153,9 +220,7 @@ app.get('/temp', function (req, res)
                         
                         for (var j = 0; j < response.rows.length; j++)
                         {
-                            //console.log(response.rows[0]); -> { id: 1, name: 'przyklad', joined: 0, lastvisit: 0, counter: 0 }
                             let valuesArray = Object.values(response.rows[j]);
-                            console.log(valuesArray);
                             ret += `<tr>`;
                             for (var i = 0; i < valuesArray.length; i++)
                             {
@@ -164,8 +229,14 @@ app.get('/temp', function (req, res)
 
                             ret += `</tr>`;
                         }
-                        ret += `</tbody></table>`
-                        ret += `<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/jquery.dataTables.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.20/js/dataTables.bootstrap4.min.js></script>`;
+                        ret += `</tbody>
+                                </table>
+                                </div>
+                                <script>
+                                $('#sortTable').DataTable();
+                                </script>
+                                </body>
+                                </html>`;
                     }
                     
                     res.send(ret);
