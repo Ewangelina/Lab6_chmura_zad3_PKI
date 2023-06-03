@@ -168,40 +168,39 @@ app.get('/temp', function (req, res)
     {
         if (sql) //widok (wyświetlanie tabeli)
         {
-            if (sql == "*")
-            {
-                sql = "SELECT * FROM " + table;
-            }
-            else
-            {
-                sql = sql.replace("%20", " ");
-                table = getTable(sql);
-            }
-            lastSQL = sql;
-            let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`
-            ret = `<!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-                    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-                    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
-                    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-                    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
-                    </head>
-                    <body>
-                    <div class="container" style="width:100%";>
-                    <p>Databse: USER<br>Table: ` + table + `</p>
-                    <a href="https://lab6-zad3.onrender.com/temp">RETURN</a>
-                    <table class="table table-striped table-bordered" id="sortTable">
-                    <thead>
-                    <tr>`
-            
             try 
             {
+                if (sql == "*")
+                {
+                    sql = "SELECT * FROM " + table;
+                }
+                else
+                {
+                    sql = sql.replace("%20", " ");
+                    table = getTable(sql);
+                }
+                lastSQL = sql;
+                let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`
+                ret = `<!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                        <meta charset="utf-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+                        <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+                        <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+                        </head>
+                        <body>
+                        <div class="container" style="width:100%";>
+                        <p>Databse: USER<br>Table: ` + table + `</p>
+                        <a href="https://lab6-zad3.onrender.com/temp">RETURN</a>
+                        <table class="table table-striped table-bordered" id="sortTable">
+                        <thead>
+                        <tr>`
                 client.query(columnCommand).then((innerResponse) => 
                 {
                     for (let i = 0; i < innerResponse.rows.length; i++) 
@@ -248,10 +247,9 @@ app.get('/temp', function (req, res)
             }
             catch (error)
             {
+                console.log(error);
                 res.send(error);
             }
-            
-
         }
         else
         {
