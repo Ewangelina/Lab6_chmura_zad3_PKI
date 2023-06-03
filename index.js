@@ -247,8 +247,10 @@ app.get('/temp', function (req, res)
             }
             catch (error)
             {
-                console.log(error);
+                
                 res.send("Could not process query");
+                console.log("----------");
+                console.log(error);
             }
         }
         else
