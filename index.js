@@ -175,10 +175,10 @@ app.get('/temp', function (req, res)
             else
             {
                 sql = sql.replace("%20", " ");
+                table = getTable(sql);
             }
             lastSQL = sql;
-            let tempTable = getTable(sql);
-            let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + tempTable + `'`
+            let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`
             ret = `<!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -195,53 +195,61 @@ app.get('/temp', function (req, res)
                     <body>
                     <div class="container" style="width:100%";>
                     <p>Databse: USER<br>Table: ` + table + `</p>
+                    <a href="https://lab6-zad3.onrender.com/temp">RETURN</a>
                     <table class="table table-striped table-bordered" id="sortTable">
                     <thead>
                     <tr>`
             
-            client.query(columnCommand).then((innerResponse, error) => 
+            try 
             {
-                for (let i = 0; i < innerResponse.rows.length; i++) 
+                client.query(columnCommand).then((innerResponse) => 
                 {
-                    ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
-                }
-                ret += `</tr>
-                        </thead>
-                        <tbody>`;
-
-                client.query(lastSQL).then((response, error) => 
-                {
-                    if (error)
+                    for (let i = 0; i < innerResponse.rows.length; i++) 
                     {
-                        ret = error
+                        ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
                     }
-                    else
+                    ret += `</tr>
+                            </thead>
+                            <tbody>`;
+
+                    client.query(lastSQL).then((response, error) => 
                     {
-                        
-                        for (var j = 0; j < response.rows.length; j++)
+                        if (error)
                         {
-                            let valuesArray = Object.values(response.rows[j]);
-                            ret += `<tr>`;
-                            for (var i = 0; i < valuesArray.length; i++)
-                            {
-                                ret += `<td>` + valuesArray[i] + `</td>`;
-                            }
-
-                            ret += `</tr>`;
+                            ret = error
                         }
-                        ret += `</tbody>
-                                </table>
-                                </div>
-                                <script>
-                                $('#sortTable').DataTable();
-                                </script>
-                                </body>
-                                </html>`;
-                    }
-                    
-                    res.send(ret);
+                        else
+                        {
+                            
+                            for (var j = 0; j < response.rows.length; j++)
+                            {
+                                let valuesArray = Object.values(response.rows[j]);
+                                ret += `<tr>`;
+                                for (var i = 0; i < valuesArray.length; i++)
+                                {
+                                    ret += `<td>` + valuesArray[i] + `</td>`;
+                                }
+
+                                ret += `</tr>`;
+                            }
+                            ret += `</tbody>
+                                    </table>
+                                    </div>
+                                    <script>
+                                    $('#sortTable').DataTable();
+                                    </script>
+                                    </body>
+                                    </html>`;
+                        }
+                        
+                        res.send(ret);
+                    });
                 });
-            });
+            }
+            catch (error)
+            {
+                res.send(error);
+            }
             
 
         }
