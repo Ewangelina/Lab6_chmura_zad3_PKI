@@ -177,7 +177,17 @@ app.get('/temp', function (req, res)
                 else
                 {
                     sql = sql.replace("%20", " ");
-                    table = getTable(sql);
+                    let tempTable = getTable(sql);
+                    if (tempTable == '')
+                    {
+                        res.send("Could not process query");
+                        disconnectDB();
+                        return;
+                    }
+                    else
+                    {
+                        table = tempTable;
+                    }
                 }
                 lastSQL = sql;
                 let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`
@@ -243,14 +253,19 @@ app.get('/temp', function (req, res)
                         
                         res.send(ret);
                     });
-                });
+                }).catch((error) => {
+                    res.send("Could not process query");
+                    console.log(error);
+                    disconnectDB();
+                    return;
+                  });
             }
             catch (error)
             {
-                
                 res.send("Could not process query");
-                console.log("----------");
                 console.log(error);
+                disconnectDB();
+                return;
             }
         }
         else
