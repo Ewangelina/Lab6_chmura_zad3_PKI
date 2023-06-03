@@ -211,8 +211,16 @@ app.get('/temp', function (req, res)
                         <table class="table table-striped table-bordered" id="sortTable">
                         <thead>
                         <tr>`
-                client.query(columnCommand).then((innerResponse) => 
+                client.query(columnCommand).then((innerResponse, error) => 
                 {
+                    if (error)
+                    {
+                        res.send("Could not process query");
+                        console.log(error);
+                        disconnectDB();
+                        return;
+                    }
+
                     for (let i = 0; i < innerResponse.rows.length; i++) 
                     {
                         ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
@@ -225,7 +233,10 @@ app.get('/temp', function (req, res)
                     {
                         if (error)
                         {
-                            ret = error
+                            res.send("Could not process query");
+                            console.log(error);
+                            disconnectDB();
+                            return;
                         }
                         else
                         {
