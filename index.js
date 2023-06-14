@@ -32,6 +32,89 @@ let table = "";
 let lastSQL = "";
 
 
+app.get('/auth/github/callback', (req, res) => {
+
+    // The req.query object has the query params that were sent to this route.
+    const requestToken = req.query.code
+    
+    axios({
+      method: 'post',
+      url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
+      // Set the content type header, so that we get the response in JSON
+      headers: {
+           accept: 'application/json'
+      }
+    }).then((response) => {
+      access_token = response.data.access_token
+      res.redirect('/success');
+    })
+  })
+  
+  app.get('/success', function(req, res) {
+    res.send(`Signed in with Github`);
+  });
+
+
+app.get('/googleout', (req, res) => {
+  authed = false;
+  try
+  {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+          console.log('User signed out.');
+          res.send(`User signed out<br><a href="https://lab6-zad3.onrender.com">Homepage</a>`);
+      });
+  }
+  catch (err)
+  {
+      res.send("Logged out");
+  }    
+  
+  
+});
+
+app.get('/google', (req, res) => {
+    if (!authed) {
+        // Generate an OAuth URL and redirect there
+        const url = oAuth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: 'https://www.googleapis.com/auth/userinfo.profile'
+        });
+        console.log(url)
+        res.redirect(url);
+    } else {
+        var oauth2 = google.oauth2({auth: oAuth2Client, version: 'v2' });
+        oauth2.userinfo.v2.me.get(function(err, result) {
+            if (err) return console.log('Returned an error: ' + err);
+            else
+            {
+                loggedUser = result.data.name;
+                var ret = "Hello " + loggedUser;
+                ret += `<a href="https://lab6-zad3.onrender.com/googleout" target="_blank">Sign in with Google</a>`;
+            }
+        });
+    }
+})
+
+app.get('/auth/google/callback', function (req, res) {
+    const code = req.query.code
+    if (code) {
+        // Get an access token based on our OAuth code
+        oAuth2Client.getToken(code, function (err, tokens) {
+            if (err) {
+                console.log('Error authenticating')
+                console.log(err);
+            } else {
+                console.log('Successfully authenticated');
+                oAuth2Client.setCredentials(tokens);
+                authed = true;
+                res.redirect('/')
+            }
+        });
+    }
+});
+
+
 app.get('/', (req, res) => {
     let ret = "";
     ret += `<!DOCTYPE html>`;
@@ -96,60 +179,6 @@ function getTable(command)
     
     return '';
 }
-
-app.get('/test', function(req, res)
-{
-    ret = `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
-    </head>
-    <body>
-    <div class="container" style="width:100%";>
-    <p>Databse: USER<br>Table: ` + table + `</p>
-    <table class="table table-striped table-bordered" id="sortTable">
-    <thead>
-    <tr>
-    <th>Firstname</th>
-    <th>Lastname</th>
-    <th>Email</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-    <td>Adam</td>
-    <td>joo</td>
-    <td>Jadamj@yahoo.com</td>
-    </tr>
-    <tr>
-    <td>seri</td>
-    <td>sami</td>
-    <td>ami_seri@rediff.com</td>
-    </tr>
-    <tr>
-    <td>zeniya</td>
-    <td>deo</td>
-    <td>zee@gmail.com</td>
-    </tr>
-    </tbody>
-    </table>
-    </div>
-    <script>
-    $('#sortTable').DataTable();
-    </script>
-    </body>
-    </html>`;
-    
-    res.send(ret);
-});
 
 //https://www.linuxscrew.com/postgresql-show-tables-show-databases-show-columns
 //SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'  <- tables
