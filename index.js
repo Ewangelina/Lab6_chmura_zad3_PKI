@@ -240,23 +240,8 @@ app.get('/temp', function (req, res)
                         <table class="table table-striped table-bordered" id="sortTable">
                         <thead>
                         <tr>`
-                client.query(columnCommand).then((innerResponse, error) => 
-                {
-                    if (error)
-                    {
-                        res.send("Could not process query");
-                        console.log(error);
-                        disconnectDB();
-                        return;
-                    }
-
-                    for (let i = 0; i < innerResponse.rows.length; i++) 
-                    {
-                        ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
-                    }
-                    ret += `</tr>
-                            </thead>
-                            <tbody>`;
+                
+                    
 
                     client.query(lastSQL).then((response, error) => 
                     {
@@ -269,6 +254,13 @@ app.get('/temp', function (req, res)
                         }
                         else
                         {
+                           for (let i = 0; i < innerResponse.rows.length; i++) 
+                            {
+                                ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
+                            }
+                            ret += `</tr>
+                                    </thead>
+                                    <tbody>`;
                             
                             for (var j = 0; j < response.rows.length; j++)
                             {
@@ -292,7 +284,7 @@ app.get('/temp', function (req, res)
                         }
                         
                         res.send(ret);
-                    });
+                    
                 }).catch((error) => {
                     res.send("Could not process query");
                     console.log(error);
