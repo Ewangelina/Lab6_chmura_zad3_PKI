@@ -254,9 +254,10 @@ app.get('/temp', function (req, res)
                         }
                         else
                         {
-                           for (let i = 0; i < innerResponse.rows.length; i++) 
+                            console.log(response);
+                           for (let i = 0; i < response.rows.length; i++) 
                             {
-                                ret += `<th class="th-sm">` + innerResponse.rows[i].column_name + `</th>`;
+                                ret += `<th class="th-sm">` + response.column[i] + `</th>`;
                             }
                             ret += `</tr>
                                     </thead>
