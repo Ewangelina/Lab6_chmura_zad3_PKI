@@ -376,9 +376,174 @@ app.get('/temp', function (req, res)
     disconnectDB();
 });
 
+app.get('/ziola', function (req, res) 
+{
+    connectDb();
+    table = ziola;
+    let sql = req.query.command;
+    let ret = `    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    Database: USER<br>`;
+    
+    
+    if (sql) //widok (wyświetlanie tabeli)
+    {
+        try 
+        {
+            if (sql == "*")
+            {
+                sql = "SELECT * FROM " + table;
+            }
+            else
+            {
+                sql = sql.replace("%20", " ");
+                let tempTable = getTable(sql);
+                if (tempTable == '')
+                {
+                    res.send("Could not process query");
+                    disconnectDB();
+                    return;
+                }
+                else
+                {
+                    table = tempTable;
+                }
+            }
+            lastSQL = sql;
+            let columnCommand = `SELECT column_name FROM information_schema.columns WHERE table_name = '` + table + `'`
+            ret = `<!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+                    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+                    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+                    </head>
+                    <body>
+                    <div class="container" style="width:100%";>
+                    <p>Databse: USER<br>Table: ` + table + `</p>
+                    <a href="https://lab6-zad3.onrender.com/temp">RETURN</a>
+                    <table class="table table-striped table-bordered" id="sortTable">
+                    <thead>
+                    <tr>`
+            
+                
+
+                client.query(lastSQL).then((response, error) => 
+                {
+                    if (error)
+                    {
+                        res.send("Could not process query");
+                        console.log(error);
+                        disconnectDB();
+                        return;
+                    }
+                    else
+                    {
+                        console.log(response);
+                        for (let i = 0; i < response.fields.length; i++) 
+                        {
+                            ret += `<th class="th-sm">` + response.fields[i].name + `</th>`;
+                        }
+                        ret += `</tr>
+                                </thead>
+                                <tbody>`;
+                        
+                        for (var j = 0; j < response.rows.length; j++)
+                        {
+                            let valuesArray = Object.values(response.rows[j]);
+                            ret += `<tr>`;
+                            for (var i = 0; i < valuesArray.length; i++)
+                            {
+                                ret += `<td>` + valuesArray[i] + `</td>`;
+                            }
+
+                            ret += `</tr>`;
+                        }
+                        ret += `</tbody>
+                                </table>
+                                </div>
+                                <script>
+                                $('#sortTable').DataTable();
+                                </script>
+                                </body>
+                                </html>`;
+                    }
+                    
+                    res.send(ret);
+                
+            }).catch((error) => {
+                res.send("Could not process query");
+                console.log(error);
+                disconnectDB();
+                return;
+                });
+        }
+        catch (error)
+        {
+            res.send("Could not process query");
+            console.log(error);
+            disconnectDB();
+            return;
+        }
+    }
+    else //not written command
+    {
+        ret += `Table: ` + table + "<br>";
+        ret += `<script>$(document).ready(function () {
+            $('#dtBasicExample').DataTable();
+            $('.dataTables_length').addClass('bs-select');
+            });</script><table id="dtBasicExample" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>`
+        let c = `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'AND table_schema NOT IN ('pg_catalog', 'information_schema');`;
+
+        ret += `<div class="dropdown">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+        Reselect table
+        </button>
+        <ul class="dropdown-menu">`;
+        client.query(c).then((response) => 
+        {
+            for (let i = 0; i < response.rows.length; i++) 
+            {
+                ret += `<li><a class="dropdown-item" href="https://lab6-zad3.onrender.com/temp?table=` + response.rows[i].table_name +`">` + response.rows[i].table_name + `</a></li>`;
+            }
+
+            ret += `</ul></div><br>`;
+            ret += `    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>`;
+            
+            ret += `
+                <button onclick="show_all()">Pokaż wszystko</button><br>
+                <button onclick="command_wind()">Wind</button>
+
+                <script type="text/javascript">
+                    async function show_all()
+                    {
+                        window.location.href = window.location.href + "&command=*";
+                    }
+                </script>
+                <script type="text/javascript">
+                    async function command_wind()
+                    {
+                        window.location.href = window.location.href + "&command= SELECT * FROM ziola WHERE main_cat = 'wind'";
+                    }
+                </script>`;
+            res.send(ret);
+        });  
+    }      
+   
+
+    disconnectDB();
+});
+
 app.get('/db', function (req, res) {
     connectDb();
-    console.log("Pobieranie danych");
+    //console.log("Pobieranie danych");
     let text = " ";
     client.query('SELECT * FROM users')
     .then((result1) => {
@@ -388,10 +553,10 @@ app.get('/db', function (req, res) {
     `
     
     for (let row of result1.rows) {
-        console.log(row);
+        //console.log(row);
     text+=' '+row.id+' '+row.name+' '+row.joined+' '+row.lastvisit+' '+row.counter+' '
     }
-    console.log(text);
+    //console.log(text);
     disconnectDB();
     res.send(text);
     })
@@ -413,7 +578,7 @@ const connectDb = async () => {
       await client.connect()
       //const res = await client.query('SELECT * FROM users')
       //console.log(res)
-      console.log("Opened database connection");      
+      //console.log("Opened database connection");      
      } catch (error) {
       console.log(error)
      }
@@ -423,7 +588,7 @@ const disconnectDB = async () => {
     return
     setTimeout(function(){
         client.end();
-        console.log("Closed database connection");
+        //console.log("Closed database connection");
     }, 2000);
 }
     
